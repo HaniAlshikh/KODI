@@ -5,16 +5,30 @@ from LIBRARY import *
 script_name = 'MAIN'
 
 
+#xbmcgui.Dialog().ok('test 111',str(addon_handle))
+
+
+args = { 'mode':'260' , 'url':'' , 'text':'' , 'page':'' }
+line = addon_path
+if '?' in line:
+	params = line[1:].split('&')
+	for param in params:
+		key,value = param.split('=',1)
+		args[key] = value
+mode = args['mode']
+#if mode.isdigit(): mode = int(mode)
+url = urllib2.unquote(args['url'])
+text = urllib2.unquote(args['text'])
+page = urllib2.unquote(args['page'])
+#xbmcgui.Dialog().ok('args',str(args))
+
+
 LOG_THIS('NOTICE','============================================================================================')
-
-
 if 'mode' not in addon_path:
 	message = 'Version: [ '+addon_version+' ]   Kodi: [ '+kodi_release+' ]'
 	#message += '\n'+'Label:['+menu_label+']   Path:['+menu_path+']'
 	LOG_THIS('NOTICE',LOGGING(script_name)+'   '+message)
-
-
-#t1 =time.time()
+else: LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 
 #response = openURL_requests('GET','http://example.com||MyDNSUrl=')
 #html = response.text
@@ -23,12 +37,6 @@ if 'mode' not in addon_path:
 #xbmcgui.Dialog().ok('',str(html))
 #html = openURL('http://example.com||MyProxyUrl=')
 #xbmcgui.Dialog().ok('',str(html))
-#xbmcgui.Dialog().ok('','shutdown the proxy')
-#html = openURL('https://google.com||MyDNSUrl=')
-#xbmcgui.Dialog().ok('',str(html))
-#html = openURL('http://google.com')
-#xbmcgui.Dialog().ok('',str(html))
-
 
 
 if not os.path.exists(addoncachefolder):
@@ -61,27 +69,34 @@ if newdb:# or 1==1:
 	#SERVICES.VERSIONS()
 	allFiles = str(os.listdir(addoncachefolder))
 	if 'iptv_' in allFiles and '_.m3u' in allFiles:
-		xbmcgui.Dialog().ok('IPTV','تم مسح الكاش أو تم تحديث البرنامج فإذا كنت تستخدم خدمة IPTV فإدن انت تحتاج أن تجلب ملفات IPTV جديدة')
+		xbmcgui.Dialog().ok('IPTV','تم مسح الكاش أو تم تحديث البرنامج .. فإذا كنت تستخدم خدمة IPTV .. فيجب أن تجلب ملفات IPTV جديدة .. للتخلص من هذه الرسالة تستطيع الدخول إلى قائمة IPTV ومسح الملفات القديمة')
 		import IPTV
+		IPTV.DELETE_ALL_OLD_FILES()
 		IPTV.CREATE_STREAMS()
 
 
-args = { 'mode':'260' , 'url':'' , 'text':'' , 'page':'' }
-line = addon_path
-if '?' in line:
-	params = line[1:].split('&')
-	for param in params:
-		key,value = param.split('=',1)
-		args[key] = value
-mode = args['mode']
-#if mode.isdigit(): mode = int(mode)
-url = urllib2.unquote(args['url'])
-text = urllib2.unquote(args['text'])
-page = urllib2.unquote(args['page'])
-#xbmcgui.Dialog().ok('args',str(args))
+play_modes = [12,24,33,43,53,63,74,82,92,112,123,134,143,182,202,212,223,236,243,252]
+if int(mode)in play_modes:
+	if os.path.exists(lastvideosfile):
+		with open(lastvideosfile,'r') as f: oldLIST = f.read()
+		oldLIST = eval(oldLIST)
+	else: oldLIST = []
+	name = xbmc.getInfoLabel('ListItem.Label')
+	image = xbmc.getInfoLabel('ListItem.icon')
+	newItem = (name,url,mode,image,page,text)
+	if newItem in oldLIST:
+		index = oldLIST.index(newItem)
+		del oldLIST[index]
+	newLIST = [newItem]+oldLIST
+	newLIST = str(newLIST[:12])
+	with open(lastvideosfile,'w') as f: f.write(newLIST)
 
 
-MAIN_DISPATCHER(mode,url,text,page)
+if not (menu_label=='..' and mode=='164' and text=='WEBSITES'):
+	results = MAIN_DISPATCHER(mode,url,text,page)
+
+
+if addon_handle==-1: sys.exit(0)
 
 
 if mode in ['161','163','164'] or (mode=='166' and 'RANDOM' in text):
@@ -102,9 +117,15 @@ for type,name,url,mode2,image,text1,text2 in menuItemsLIST:
 
 
 search_modes = [19,29,39,49,59,69,79,99,119,139,149,209,229,249,259]
-if int(mode) in search_modes or len(menuItemsLIST)>0:
-	xbmcplugin.endOfDirectory(addon_handle,True,False,True)
+website_mainmenu_modes = [11,51,61,64,91,111,132,181,201,211,251]
+allowed_empty_modes = search_modes+website_mainmenu_modes+[265]
+filter_modes = [114,204,244,254]
+menu_update = filter_modes+[266]
+if int(mode) in menu_update: xbmcplugin.endOfDirectory(addon_handle,True,True,True)
+elif int(mode) in allowed_empty_modes or len(menuItemsLIST)>0: xbmcplugin.endOfDirectory(addon_handle,True,False,True)
 else: xbmcplugin.endOfDirectory(addon_handle,False,False,True)
+
+
 
 
 

@@ -74,7 +74,7 @@ WEBSITES = { 'AKOAM'		:['https://akoam.net']
 			,'ALFATIMI'		:['http://alfatimi.tv']
 			,'ALKAWTHAR'	:['https://www.alkawthartv.com']
 			,'ALMAAREF'		:['http://www.almaareftv.com/old','http://www.almaareftv.com']
-			,'ARABLIONZ'	:['https://arablionz.com']
+			,'ARABLIONZ'	:['http://arablionz.com']
 			,'EGYBESTVIP'	:['https://egybest.vip']
 			,'HELAL'		:['https://www.4helal.co']
 			,'IFILM'		:['http://ar.ifilmtv.com','http://en.ifilmtv.com','http://fa.ifilmtv.com','http://fa2.ifilmtv.com']
@@ -114,6 +114,7 @@ fanart = xbmc.translatePath(os.path.join('special://home/addons/' + addon_id , '
 
 addoncachefolder = os.path.join(xbmc.translatePath('special://temp'),addon_id)
 dbfile = os.path.join(addoncachefolder,"webcache_"+addon_version+".db")
+lastvideosfile = os.path.join(addoncachefolder,"played_videos.lst")
 
 MINUTE = 60
 HOUR = 60*MINUTE
@@ -322,13 +323,14 @@ def addMenuItem(type,name,url,mode,image='',page='',text=''):
 	if type=='dir' and '::' in name:
 		website,name = name.split('::',1)
 		if website!='' and '_' in name:
+			if 'مصنف' in name or 'فلتر' in name: return
 			nameonly = name.split('_')[2]
 			nameonly = nameonly.replace('ـ','').replace('  ',' ').replace('إ','ا').replace('آ','ا')
 			nameonly = nameonly.replace('ة','ه').replace('و ','و').replace('أ','ا')
 			nameonly = nameonly.replace('لأ','لا').replace('لإ','لا').replace('لآ','لا')
 			nameonly = nameonly.strip(' ')
-			cond1 = ('العاب' not in nameonly and 'خيال' not in nameonly)
-			cond2 = ('الان' not in nameonly and 'حاليه' not in nameonly)
+			cond1 = ('العاب' not in nameonly and 'خيال' not in nameonly and 'حاليه' not in nameonly)
+			cond2 = ('الان' not in nameonly and 'البوم' not in nameonly)
 			if cond1 and cond2: nameonly = nameonly.replace('ال','')
 			nameonly = nameonly.replace('اخري','اخرى').replace('اجنبى','اجنبي').replace('عائليه','عائلي')
 			nameonly = nameonly.replace('اجنبيه','اجنبي').replace('عربيه','عربي').replace('رومانسيه','رومانسي')
@@ -338,41 +340,56 @@ def addMenuItem(type,name,url,mode,image='',page='',text=''):
 			nameonly = nameonly.replace('تليفزيونيه','تلفزيون').replace('تلفزيونيه','تلفزيون')
 			nameonly = nameonly.replace('الحاليه','حاليه').replace('موسیقی','موسيقى').replace('الانمي','انمي')
 			nameonly = nameonly.replace('المسلسلات','مسلسلات').replace('البرامج','برامج')
+			nameonly = nameonly.replace('حروب','حرب')
+			#if 'AKWAM' in website: xbmcgui.Dialog().ok(nameonly,website)
+			if   website=='AKWAM'		: website = 'موقع أكوام الجديد'
+			elif website=='ALARAB'		: website = 'موقع كل العرب'
+			elif website=='ALFATIMI'	: website = 'موقع المنبر الفاطمي'
+			elif website=='ALKAWTHAR'	: website = 'موقع قناة الكوثر'
+			elif website=='ALMAAREF'	: website = 'موقع قناة المعارف'
+			elif website=='ARABLIONZ'	: website = 'موقع عرب ليونز'
+			elif website=='ARABSEED'	: website = 'موقع عرب سييد'
+			elif website=='EGYBESTVIP'	: website = 'موقع ايجي بيست vip'
+			elif website=='HELAL'		: website = 'موقع هلال يوتيوب'
+			elif website=='IFILM_ARABIC'	: website = 'موقع قناة اي فيلم العربي'
+			elif website=='IFILM_ENGLISH'	: website = 'موقع قناة اي فيلم انكليزي'
+			elif website=='PANET'		: website = 'موقع بانيت'
+			elif website=='SHAHID4U'	: website = 'موقع شاهد فوريو'
+			elif website=='SHOOFMAX'	: website = 'موقع شوف ماكس'
+			elif website=='AKOAM'		: website = 'موقع أكوام القديم'
+			elif website=='IPTV'		: website = 'IPTV'
 			if nameonly not in contentsDICT.keys(): contentsDICT[nameonly] = {}
-			contentsDICT[nameonly][website] = [name,url,mode,image,page,text]
+			contentsDICT[nameonly][website] = [type,name,url,mode,image,page,text]
 			return
 	menuItemsLIST.append([type,name,url,mode,image,page,text])
 	return
 
 def addKodiMenuItem(type,name,url,mode,image='',text1='',text2=''):
-	if image=='': image = icon
 	if type=='dir': start1,start2 = ';',','
 	else: start1,start2 = escapeUNICODE('\u02d1'),' '
 	name2 = re.findall('&&_(\D\D\w)__MOD_(.*?)&&','&&'+name+'&&',re.DOTALL)
 	if name2: name = start1+'[COLOR FFC89008]'+name2[0][0]+'  [/COLOR]'+name2[0][1]
 	name2 = re.findall('&&_(\D\D\w)_(.*?)&&','&&'+name+'&&',re.DOTALL)
 	if name2: name = start2+'[COLOR FFC89008]'+name2[0][0]+'  [/COLOR]'+name2[0][1]
-	if 'IsPlayable=no' in text2: IsPlayable = 'no'
-	else: IsPlayable='yes'
 	u = 'plugin://'+addon_id+'/?mode='+str(mode)
 	if url!='': u = u+'&url='+quote(url)
 	if type=='dir':
 		if text1!='': u = u+'&page='+quote(text1)
 	if text2!='': u = u+'&text='+quote(text2)
-	listitem = xbmcgui.ListItem(name, iconImage=image, thumbnailImage=image)
-	listitem.setProperty('fanart_image', fanart)
+	listitem = xbmcgui.ListItem(name)
+	listitem.setArt({'icon':image,'thumb':image,'fanart':image,})
 	if type=='link':
-		listitem.setInfo('Video', {'mediatype': 'video'})
+		listitem.setInfo('video',{'mediatype':'video'})
 		if text1!='':
-			duration = '0:0:0:0:0:' + text1
+			duration = '0:0:0:0:0:'+text1
 			dummy,days,hours,minutes,seconds = duration.rsplit(':',4)
 			duration = int(days)*24*HOUR+int(hours)*HOUR+int(minutes)*60+int(seconds)
-			listitem.setInfo('Video', {'duration': duration})
-		if IsPlayable=='yes': listitem.setProperty('IsPlayable', 'true')
-		xbmcplugin.setContent(addon_handle, 'videos')
+			listitem.setInfo('video',{'duration':duration})
+		if 'IsPlayable=no' not in text2: listitem.setProperty('IsPlayable','true')
+		xbmcplugin.setContent(addon_handle,'videos')
 		isFolder = False
 	else:
-		listitem.setInfo( type="Video", infoLabels={ "Title": name } )
+		listitem.setInfo(type="video",infoLabels={"Title":name})
 		isFolder = True
 	xbmcplugin.addDirectoryItem(handle=addon_handle,url=u,listitem=listitem,isFolder=isFolder)
 	return
@@ -996,7 +1013,7 @@ def PLAY_VIDEO(url3,website='',showWatched='yes'):
 		#xbmc.Player().play(url,play_item)
 	play_item.setContentLookup(False)
 	#logfilename = xbmc.translatePath('special://logpath')+'kodi.log'
-	timeout,step,result = 60,2,'tried'
+	timeout,step,result = 60,1,'tried'
 	for i in range(0,timeout,step):
 		xbmc.sleep(step*1000)
 		result = myplayer.status
@@ -1247,8 +1264,8 @@ def ENABLE_RTMP(showDialogs=True):
 
 # open file using one line example
 """
-with open('S:\\emad3.html', 'w') as f: f.write(block)
-with open('S:\\test2.m3u8', 'r') as f: f.read()
+with open('S:\\emad3.html', 'w') as f: f.write(emad)
+with open('S:\\test2.m3u8', 'r') as f: emad = f.read()
 """
 
 

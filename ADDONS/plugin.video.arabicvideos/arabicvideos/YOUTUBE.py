@@ -6,7 +6,7 @@ menu_name='_YUT_'
 website0a = WEBSITES[script_name][0]
 
 def MAIN(mode,url,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==140: results = MENU()
 	elif mode==141: results = TITLES(url)
 	elif mode==142: results = PLAYLIST_ITEMS(url)
@@ -91,6 +91,7 @@ def PLAYLIST_ITEMS(url):
 		for title,link,img,duration in items:
 			if 'timestamp' in duration: duration = re.findall('timestamp.*?><.*?>(.*?)<',duration,re.DOTALL)[0]
 			else: duration=''
+			if '.' in duration: duration = duration.replace('.',':')
 			title = title.replace('\n','')
 			title = unescapeHTML(title)
 			link = website0a+link
@@ -137,6 +138,7 @@ def CHANNEL_ITEMS(url):
 			else: live = ''
 			if 'video-time' in count: duration = re.findall('video-time.*?><.*?>(.*?)<',count,re.DOTALL)[0]
 			else: duration=''
+			if '.' in duration: duration = duration.replace('.',':')
 			if 'video-count-label' in count: count = ' '+re.findall('video-count-label.*?(\d+).*?</',count,re.DOTALL)[0]
 			else: count=''
 			title = title.replace('\n','')
@@ -176,6 +178,7 @@ def TITLES(url):
 		if '\n' in paid: title = '$$:  '+title
 		if 'video-time' in count: duration = re.findall('video-time.*?>(.*?)<',count,re.DOTALL)[0]
 		else: duration = ''
+		if '.' in duration: duration = duration.replace('.',':')
 		if '>Live now<' in count2: live = 'LIVE:  '
 		else: live = ''
 		if 'video-count-label' in count:

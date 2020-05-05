@@ -11,7 +11,7 @@ website0a = WEBSITES[script_name][0]
 proxy = ''
 
 def MAIN(mode,url,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==240: results = MENU(url)
 	elif mode==241: results = TITLES(url+proxy,text)
 	elif mode==242: results = EPISODES(url+proxy)
@@ -51,7 +51,7 @@ def TITLES(url,type=''):
 	if type=='featured':
 		html_blocks = re.findall('swiper-container(.*?)swiper-button-prev',html,re.DOTALL)
 	else:
-		html_blocks = re.findall('class="widget"(.*?)</div>.. *?</div>.. *?</div>',html,re.DOTALL)
+		html_blocks = re.findall('class="widget"(.*?)main-footer',html,re.DOTALL)
 	if html_blocks:
 		block = html_blocks[0]
 		items = re.findall('src="(.*?)".*?href="(.*?)".*?text-white">(.*?)<',block,re.DOTALL)
@@ -72,14 +72,12 @@ def TITLES(url,type=''):
 
 def SEARCH(search):
 	# https://akwam.net/search?q=%D8%A8%D8%AD%D8%AB
-	if '::' in search:
-		search = search.split('::')[0]
-		exit = False
-	else: exit = True
+	if '::' in search: search = search.split('::')[0]
 	if search=='': search = KEYBOARD()
 	if search == '': return
 	new_search = search.replace(' ','%20')
-	url = website0a + '/search?q=' + new_search + proxy
+	url = website0a + '/search?q='+new_search
+	#xbmcgui.Dialog().ok(url,'SEARCH_AKOAM')
 	results = TITLES(url)
 	return
 
@@ -92,10 +90,11 @@ def EPISODES(url):
 	else:
 		html_blocks = re.findall('-episodes">(.*?)col-lg-8',html,re.DOTALL)
 		block = html_blocks[0]
-		episodes = re.findall('href="(.*?)".*?>(.*?)<.*?src="(.*?)"',block,re.DOTALL)
+		episodes = re.findall('href="(http.*?)".*?>(.*?)<.*?src="(.*?)"',block,re.DOTALL)
 		for link,title,img in episodes:
-			if 'الحلقات' in title: continue
-			addMenuItem('link',menu_name+title,link,243,img)
+			if 'الحلقات' in title or 'مواسم اخرى' in title: continue
+			if '/series/' in link: addMenuItem('dir',menu_name+title,link,242,img)
+			else: addMenuItem('link',menu_name+title,link,243,img)
 	return
 
 def PLAY(url):
@@ -110,12 +109,9 @@ def PLAY(url):
 	linkLIST,titleLIST,blocks,qualities = [],[],[],[]
 	if buttons:
 		filename = '.mp4'
-		buttonLIST,qualityLIST = zip(*buttons)
-		for i in range(len(buttonLIST)):
-			button = buttonLIST[i]
-			quality = qualityLIST[i]
+		for button,quality in buttons:
 			#xbmcgui.Dialog().ok(quality,button)
-			html_blocks = re.findall('tab-content" id="'+button+'"(.*?)</a>.. *?</div>.. *?</div>',html,re.DOTALL)
+			html_blocks = re.findall('tab-content" id="'+button+'".*?</div>.</div>',html,re.DOTALL)
 			block = html_blocks[0]
 			blocks.append(block)
 			qualities.append(quality)
@@ -151,6 +147,7 @@ def PLAY(url):
 	if 'akwam' in link: url2 = link
 	else:
 		html2 = openURL_cached(LONG_CACHE,link,'',headers,'','AKWAM-PLAY-2nd')
+		#xbmcgui.Dialog().ok(link,html2)
 		url2 = re.findall('class="content.*?href="(.*?)"',html2,re.DOTALL)
 		url2 = unquote(url2[0])
 	url3 = ''
@@ -160,7 +157,9 @@ def PLAY(url):
 		url3 = unquote(url3[0])
 	if 'مشاهدة' in title:
 		html4 = openURL_cached(SHORT_CACHE,url2,'',headers,'','AKWAM-PLAY-4th')
-		links = re.findall('source\n *?src="(.*?)".*?size="(.*?)"',html4,re.DOTALL)
+		#xbmcgui.Dialog().ok(url2,html4)
+		links = re.findall('<source.*?src="(.*?)".*?size="(.*?)"',html4,re.DOTALL)
+		#xbmcgui.Dialog().ok(url2,str(links))
 		for link,size in links:
 			if size in title:
 				url3 = link

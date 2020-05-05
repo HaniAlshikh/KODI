@@ -12,7 +12,7 @@ menu_name='_KLA_'
 website0a = WEBSITES[script_name][0]
 
 def MAIN(mode,url,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==10: results = MENU(url)
 	elif mode==11: results = TITLES(url)
 	elif mode==12: results = PLAY(url)
@@ -34,6 +34,7 @@ def MENU(website=''):
 	items = re.findall('href="(.*?)".*?>(.*?)<',block1,re.DOTALL)
 	for link,title in items:
 		link = website0a+link
+		title = title.strip(' ')
 		addMenuItem('dir',website+'::'+menu_name+title,link,11)
 	if website=='': addMenuItem('link','[COLOR FFC89008]====================[/COLOR]','',9999,'','','IsPlayable=no')
 	html_blocks = re.findall('id="navbar"(.*?)</div>',html,re.DOTALL)

@@ -110,6 +110,7 @@ def RESOLVABLE(url):
 	# named		: سيرفر عام محدد
 	private,known,external,named = None,None,None,None
 	result1,result2,result3,result4,result5 = '','','','',''
+	#xbmcgui.Dialog().ok(url,'')
 	url2,server = url,url.lower().split('/')[2]
 	if 'name=' in url:
 		url2,named = url.split('name=',1)

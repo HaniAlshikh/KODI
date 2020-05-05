@@ -7,7 +7,7 @@ menu_name='_HLA_'
 website0a = WEBSITES[script_name][0]
 
 def MAIN(mode,url,page,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==80: results = MENU(url)
 	elif mode==81: results = ITEMS(url)
 	elif mode==82: results = PLAY(url)

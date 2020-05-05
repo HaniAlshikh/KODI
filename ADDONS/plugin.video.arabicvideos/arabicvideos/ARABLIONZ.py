@@ -8,7 +8,7 @@ website0a = WEBSITES[script_name][0]
 ignoreLIST = ['عروض المصارعة','الكل','رياضة و مصارعه','مسلسلات انمي مترجمة','الرئيسية']
 
 def MAIN(mode,url,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==200: results = MENU(url)
 	elif mode==201: results = TITLES(url)
 	elif mode==202: results = PLAY(url)
@@ -26,7 +26,8 @@ def MENU(website=''):
 		addMenuItem('dir',menu_name+'فلتر كامل',website0a,204)
 		addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
 		#addMenuItem('dir',menu_name+'فلتر','',114,website0a)
-	html = openURL_cached(LONG_CACHE,website0a,'',headers,'','ARABLIONZ-MENU-1st')
+	response = openURL_requests_cached(LONG_CACHE,'GET',website0a,'',headers,True,'','ARABLIONZ-MENU-1st')
+	html = response.text.encode('utf8')
 	html_blocks = re.findall('categories-tabs(.*?)advanced-search',html,re.DOTALL)
 	block = html_blocks[0]
 	items = re.findall('data-get="(.*?)".*?<h3>(.*?)<',block,re.DOTALL)
@@ -39,18 +40,16 @@ def MENU(website=''):
 	items = re.findall('href="(.*?)">(.*?)<',block,re.DOTALL)
 	#keepLIST = ['مسلسلات ','افلام ','برامج','عروض','كليبات','اغانى']
 	for link,title in items:
-		if 'افلام اجنبية' in title: link = link.rstrip('/')+'-1'
 		if 'http' not in link: link = website0a+link
 		title = title.strip(' ')
 		if not any(value in title for value in ignoreLIST):
-		#	if any(value in title for value in keepLIST):
-			link = quote(link)
 			addMenuItem('dir',website+'::'+menu_name+title,link,201)
 	return
 
 def TITLES(url):
 	#xbmcgui.Dialog().ok(url,'TITLES')
-	html = openURL_cached(REGULAR_CACHE,url,'',headers,'','ARABLIONZ-TITLES-1st')
+	response = openURL_requests_cached(REGULAR_CACHE,'GET',url,'',headers,True,'','ARABLIONZ-TITLES-1st')
+	html = response.text.encode('utf8')
 	if 'getposts' in url: block = html
 	else:
 		html_blocks = re.findall('page-content(.*?)main-footer',html,re.DOTALL)
@@ -60,7 +59,8 @@ def TITLES(url):
 	allTitles = []
 	itemLIST = ['مشاهدة','فيلم','اغنية','كليب','اعلان','هداف','مباراة','عرض','مهرجان','البوم']
 	for img,link ,title in items:
-		link = quote(link)
+		#link = escapeUNICODE(link)
+		#link = quote(link)
 		if '/series/' in link: continue
 		link = link.strip('/')
 		title = unescapeHTML(title)
@@ -92,7 +92,8 @@ def TITLES(url):
 
 def EPISODES(url):
 	episodesCount,items,itemsNEW = -1,[],[]
-	html = openURL_cached(REGULAR_CACHE,url,'',headers,'','ARABLIONZ-EPISODES-1st')
+	response = openURL_requests_cached(REGULAR_CACHE,'GET',url,'',headers,True,'','ARABLIONZ-EPISODES-1st')
+	html = response.text.encode('utf8')
 	html_blocks = re.findall('ti-list-numbered(.*?)</div>',html,re.DOTALL)
 	if html_blocks:
 		itemsNEW = []
@@ -114,12 +115,12 @@ def EPISODES(url):
 	if seasonsCount>1 and episodesCount>0 and '/season/' not in url:
 		for link,title,sequence in items:
 			if '/season/' in link:
-				link = quote(link)
+				#link = quote(link)
 				addMenuItem('dir',menu_name+title,link,203)
 	else:
 		for link,title,sequence in items:
 			if '/season/' not in link:
-				if '%' not in link: link = quote(link)
+				#if '%' not in link: link = quote(link)
 				#else: link = quote(unquote(link))
 				#link = unquote(link)
 				title = unquote(title)
@@ -127,11 +128,13 @@ def EPISODES(url):
 	return
 
 def PLAY(url):
+	#LOG_THIS('NOTICE','EMAD 111')
 	linkLIST = []
 	parts = url.split('/')
 	#xbmcgui.Dialog().ok(url,'PLAY-1st')
 	#url = unquote(quote(url))
-	html = openURL_cached(LONG_CACHE,url,'',headers,'','ARABLIONZ-PLAY-1st')
+	response = openURL_requests_cached(LONG_CACHE,'GET',url,'',headers,True,'','ARABLIONZ-PLAY-1st')
+	html = response.text.encode('utf8')
 	id = re.findall('postId:"(.*?)"',html,re.DOTALL)
 	if not id: id = re.findall('post_id=(.*?)"',html,re.DOTALL)
 	id = id[0]
@@ -139,7 +142,8 @@ def PLAY(url):
 	#LOG_THIS('NOTICE','EMAD START TIMING 111')
 	if True or '/watch/' in html:
 		url2 = url.replace(parts[3],'watch')
-		html2 = openURL_cached(LONG_CACHE,url2,'',headers,'','ARABLIONZ-PLAY-2nd')
+		response = openURL_requests_cached(LONG_CACHE,'GET',url2,'',headers,True,'','ARABLIONZ-PLAY-2nd')
+		html2 = response.text.encode('utf8')
 		items1 = re.findall('data-embedd="(.*?)".*?alt="(.*?)"',html2,re.DOTALL)
 		items2 = re.findall('data-embedd=".*?(http.*?)("|&quot;)',html2,re.DOTALL)
 		items3 = re.findall('src=&quot;(.*?)&quot;.*?>(.*?)<',html2,re.DOTALL|re.IGNORECASE)
@@ -166,7 +170,8 @@ def PLAY(url):
 	if True or '/download/' in html:
 		headers2 = { 'User-Agent':'' , 'X-Requested-With':'XMLHttpRequest' }
 		url2 = website0a + '/ajaxCenter?_action=getdownloadlinks&postId='+id
-		html2 = openURL_cached(LONG_CACHE,url2,'',headers2,'','ARABLIONZ-PLAY-3rd')
+		response = openURL_requests_cached(LONG_CACHE,'GET',url2,'',headers2,True,'','ARABLIONZ-PLAY-3rd')
+		html2 = response.text.encode('utf8')
 		if 'download-btns' in html2:
 			items3 = re.findall('href="(.*?)"',html2,re.DOTALL)
 			for url3 in items3:
@@ -175,7 +180,8 @@ def PLAY(url):
 					linkLIST.append(url3)
 				elif '/page/' in url3:
 					resolution4 = ''
-					html4 = openURL_cached(LONG_CACHE,url3,'',headers,'','ARABLIONZ-PLAY-4th')
+					response = openURL_requests_cached(LONG_CACHE,'GET',url3,'',headers,True,'','ARABLIONZ-PLAY-4th')
+					html4 = response.text.encode('utf8')
 					blocks = re.findall('(<strong>.*?)-----',html4,re.DOTALL)
 					for block4 in blocks:
 						server4 = ''
@@ -197,8 +203,11 @@ def PLAY(url):
 			#xbmcgui.Dialog().ok('download 1',	str(len(linkLIST))	)
 		elif 'slow-motion' in html2:
 			html3 = html2.replace('<h6 ','==END== ==START==')+'==END=='
+			#with open('s:\\emad.html','w') as f: f.write(html3)
 			all_blocks = re.findall('==START==(.*?)==END==',html3,re.DOTALL)
 			for block4 in all_blocks:
+				if 'href=' not in block4: continue
+				#xbmcgui.Dialog().ok('download 111',	block4	)
 				resolution4 = ''
 				items4 = re.findall('slow-motion">(.*?)<',block4,re.DOTALL)
 				for item4 in items4:
@@ -206,14 +215,15 @@ def PLAY(url):
 					if item:
 						resolution4 = '____'+item[0]
 						break
-				items4 = re.findall('<td>(.*?)</td>.*?href="(.*?)"',block4,re.DOTALL)
+				items4 = re.findall('<td>(.*?)</td>.*?href="(http.*?)"',block4,re.DOTALL)
 				for server4,link4 in items4:
 					link4 = link4+'?name='+server4+'__download'+resolution4
 					linkLIST.append(link4)
-				items4 = re.findall('href="(.*?)".*?name">(.*?)<',block4,re.DOTALL)
+				items4 = re.findall('href="(http.*?)".*?name">(.*?)<',block4,re.DOTALL)
 				for link4,server4 in items4:
 					link4 = link4+'?name='+server4+'__download'+resolution4
 					linkLIST.append(link4)
+	#LOG_THIS('NOTICE','EMAD 222')
 	#xbmcgui.Dialog().ok('both: watch & download',	str(len(linkLIST))	)
 	#selection = xbmcgui.Dialog().select('أختر البحث المناسب', linkLIST)
 	if len(linkLIST)==0: xbmcgui.Dialog().ok('','الرابط ليس فيه فيديو')
@@ -230,7 +240,8 @@ def SEARCH(search):
 	if search=='': search = KEYBOARD()
 	if search == '': return
 	search = search.replace(' ','+')
-	html = openURL_cached(LONG_CACHE,website0a,'',headers,'','ARABLIONZ-SEARCH-1st')
+	response = openURL_requests_cached(LONG_CACHE,'GET',website0a,'',headers,True,'','ARABLIONZ-SEARCH-1st')
+	html = response.text.encode('utf8')
 	html_blocks = re.findall('chevron-select(.*?)</div>',html,re.DOTALL)
 	if category and html_blocks:
 		block = html_blocks[0]

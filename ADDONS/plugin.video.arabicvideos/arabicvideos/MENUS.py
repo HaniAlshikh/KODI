@@ -5,34 +5,37 @@ from LIBRARY import *
 script_name='MENUS'
 
 def MAIN(mode,url,text=''):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==260: results = MAIN_MENU()
 	elif mode==261: results = WEBSITES_MENU()
 	elif mode==262: results = GLOBAL_SEARCH_MENU(text,True)
 	elif mode==263: results = ANSWERS_MENU()
 	elif mode==264: results = SERVICES_MENU()
+	elif mode==265: results = LAST_VIDEOS_MENU()
+	elif mode==266: results = DELETE_LAST_VIDEOS_MENU()
 	else: results = False
 	return results
 
 def MAIN_MENU():
 	#addMenuItem('link','Testing - watched enabled','',179,'','','IsPlayable=yes')
 	#addMenuItem('link','Testing - watched disabled','',179,'','','IsPlayable=no')
-	addMenuItem('dir','[COLOR FFC89008]  1.  [/COLOR]'+'جميع المواقع','',261)
-	addMenuItem('dir','[COLOR FFC89008]  2.  [/COLOR]'+'جميع الأقسام','',165,'','','WEBSITES')
-	addMenuItem('dir','[COLOR FFC89008]  3.  [/COLOR]'+'قنوات تلفزيون','',100)
+	addMenuItem('dir','[COLOR FFC89008]  1.  [/COLOR]'+'قائمة المواقع','',261)
+	addMenuItem('dir','[COLOR FFC89008]  2.  [/COLOR]'+'قائمة الاقسام','',165,'','','WEBSITES')
+	addMenuItem('dir','[COLOR FFC89008]  3.  [/COLOR]'+'قائمة  القنوات','',100)
 	addMenuItem('dir','[COLOR FFC89008]  4.  [/COLOR]'+'قائمة العشوائية','',160)
-	addMenuItem('dir','[COLOR FFC89008]  5.  [/COLOR]'+'اشتراك IPTV مدفوع','',230)
-	addMenuItem('dir','[COLOR FFC89008]  6.  [/COLOR]'+'IPTV جميع  أقسام  الـ','',165,'','','IPTV')
-	addMenuItem('dir','[COLOR FFC89008]  7.  [/COLOR]'+'بحث يشمل جميع المواقع','',262)
+	addMenuItem('dir','[COLOR FFC89008]  5.  [/COLOR]'+'قائمة اشتراك IPTV','',230)
+	addMenuItem('dir','[COLOR FFC89008]  6.  [/COLOR]'+'IPTV قائمة أقسام الـ','',165,'','','IPTV')
+	addMenuItem('dir','[COLOR FFC89008]  7.  [/COLOR]'+'بحث في جميع المواقع','',262)
+	addMenuItem('dir','[COLOR FFC89008]  8.  [/COLOR]'+'اخر 12 فيديو تم تشغيلها','',265)
 	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
-	addMenuItem('link','[COLOR FFC89008]  8.  [/COLOR]البرنامج إصدار رقم ( '+addon_version+' )','',7,'','','IsPlayable=no')
-	addMenuItem('link','[COLOR FFC89008]  9.  [/COLOR]ـ Contact Me  كيف تتصل بالمبرمج','',196)
-	addMenuItem('link','[COLOR FFC89008]10.  [/COLOR]'+'تقرير عن استخدام البرنامج','',176)
+	addMenuItem('link','[COLOR FFC89008]  9.  [/COLOR]'+'تقرير عن استخدام البرنامج','',176)
+	addMenuItem('link','[COLOR FFC89008]10.  [/COLOR]البرنامج إصدار رقم ( '+addon_version+' )','',7,'','','IsPlayable=no')
 	#addMenuItem('dir','[COLOR FFC89008]10.  [/COLOR]'+'ـ Services Menu  قائمة الخدمات','',172)
 	#addMenuItem('dir','  4.  [COLOR FFC89008]ـ Services Menu  قائمة الخدمات[/COLOR]','',264)
 	#addMenuItem('link','  5.  [COLOR FFC89008]البرنامج إصدار رقم ('+addon_version+')[/COLOR]','',7,'','','IsPlayable=no')
-	addMenuItem('dir','[COLOR FFC89008]11.  [/COLOR]ـ Services Menu  قائمة الخدمات','',264)
-	addMenuItem('dir','[COLOR FFC89008]12.  [/COLOR]ـ Answers Menu  قائمة الاجوبة','',263)
+	addMenuItem('dir','[COLOR FFC89008]11.  [/COLOR]ـ Answers Menu  قائمة الاجوبة','',263)
+	addMenuItem('dir','[COLOR FFC89008]12.  [/COLOR]ـ Services Menu  قائمة الخدمات','',264)
+	addMenuItem('link','[COLOR FFC89008]13.  [/COLOR]ـ Contact Me  كيف تتصل بالمبرمج','',196,'','','IsPlayable=no')
 	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
 	return
 
@@ -85,7 +88,7 @@ def SERVICES_MENU():
 	return
 
 def ANSWERS_MENU():
-	addMenuItem('link','[COLOR FFC89008]  1.  [/COLOR]'+'كيف تتصل وتتواصل مع المبرمج','',196)
+	addMenuItem('link','[COLOR FFC89008]  1.  [/COLOR]'+'كيف تتصل وتتواصل مع المبرمج','',196,'','','IsPlayable=no')
 	addMenuItem('link','[COLOR FFC89008]  2.  [/COLOR]'+'DMCA  قانون الألفية للملكية الرقمية','',3,'','','IsPlayable=no')
 	addMenuItem('link','[COLOR FFC89008]  3.  [/COLOR]'+'تحذير يخص شهادة التشفير','',171,'','','IsPlayable=no')
 	addMenuItem('link','[COLOR FFC89008]  4.  [/COLOR]'+'ما هي افضل واجهة للبرنامج','',197,'','','IsPlayable=no')
@@ -115,30 +118,52 @@ def GLOBAL_SEARCH_MENU(search='',show=True):
 	if show: search2 = search
 	else: search2 = 'كلمة عشوائية'
 	addMenuItem('link','[COLOR FFC89008]مواقع سيرفرات خاصة - قليلة المشاكل[/COLOR]','',157,'','','IsPlayable=no')
-	addMenuItem('dir','1.  [COLOR FFC89008]IPT   [/COLOR]'+search2+' - خدمة IPTV','',239,'','',search)
-	addMenuItem('dir','2.  [COLOR FFC89008]IFL    [/COLOR]'+search2+' - موقع قناة آي فيلم','',29,'','',search)
-	addMenuItem('dir','3.  [COLOR FFC89008]MRF  [/COLOR]'+search2+' - موقع قناة المعارف','',49,'','',search)
-	addMenuItem('dir','4.  [COLOR FFC89008]KWT  [/COLOR]'+search2+' - موقع قناة الكوثر','',139,'','',search)
-	addMenuItem('dir','5.  [COLOR FFC89008]FTM   [/COLOR]'+search2+' - موقع المنبر الفاطمي','',69,'','',search)
-	addMenuItem('dir','6.  [COLOR FFC89008]YUT   [/COLOR]'+search2+' - موقع يوتيوب','',149,'','',search)
-	addMenuItem('dir','7.  [COLOR FFC89008]KLA   [/COLOR]'+search2+' - موقع كل العرب','',19,'','',search)
-	addMenuItem('dir','8.  [COLOR FFC89008]PNT   [/COLOR]'+search2+' - موقع بانيت','',39,'','',search)
-	addMenuItem('dir','9.  [COLOR FFC89008]SHF   [/COLOR]'+search2+' - موقع شوف ماكس','',59,'','',search)
-	addMenuItem('dir','10. [COLOR FFC89008]AKW [/COLOR]'+search2+' - موقع أكوام الجديد','',249,'','',search)
+	addMenuItem('dir','  1.  [COLOR FFC89008]IPT   [/COLOR]'+search2+' - خدمة IPTV','',239,'','',search)
+	#addMenuItem('dir','  2.  [COLOR FFC89008]PNT   [/COLOR]'+search2+' - 39 بانيت','',9999,'','',search)
+	addMenuItem('dir','  2.  [COLOR FFC89008]YUT   [/COLOR]'+search2+' - موقع يوتيوب','',149,'','',search)
+	addMenuItem('dir','  3.  [COLOR FFC89008]KLA   [/COLOR]'+search2+' - موقع كل العرب','',19,'','',search)
+	addMenuItem('dir','  4.  [COLOR FFC89008]KWT  [/COLOR]'+search2+' - موقع قناة الكوثر','',139,'','',search)
+	addMenuItem('dir','  5.  [COLOR FFC89008]IFL    [/COLOR]'+search2+' - موقع قناة آي فيلم','',29,'','',search)
+	addMenuItem('dir','  6.  [COLOR FFC89008]AKW [/COLOR]'+search2+' - موقع أكوام الجديد','',249,'','',search)
+	addMenuItem('dir','  7.  [COLOR FFC89008]SHF   [/COLOR]'+search2+' - موقع شوف ماكس','',59,'','',search)
+	addMenuItem('dir','  8.  [COLOR FFC89008]MRF  [/COLOR]'+search2+' - موقع قناة المعارف','',49,'','',search)
+	addMenuItem('dir','  9.  [COLOR FFC89008]FTM   [/COLOR]'+search2+' - موقع المنبر الفاطمي','',69,'','',search)
 	#addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
 	addMenuItem('link','[COLOR FFC89008]مواقع سيرفرات خاصة وعامة - كثيرة المشاكل[/COLOR]','',157,'','','IsPlayable=no')
+	addMenuItem('dir','10. [COLOR FFC89008]ARS  [/COLOR]'+search2+' - موقع عرب سييد','',259,'','',search)
 	addMenuItem('dir','11. [COLOR FFC89008]AKO  [/COLOR]'+search2+' - موقع أكوام القديم','',79,'','',search)
 	addMenuItem('dir','12. [COLOR FFC89008]EGV  [/COLOR]'+search2+' - موقع إيجي بيست vip','',229,'','',search)
-	addMenuItem('dir','13. [COLOR FFC89008]ARS  [/COLOR]'+search2+' - موقع عرب سييد','',259,'','',search)
 	#addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
 	addMenuItem('link','[COLOR FFC89008]مواقع سيرفرات عامة - كثيرة المشاكل[/COLOR]','',157,'','','IsPlayable=no')
-	addMenuItem('dir','14. [COLOR FFC89008]HEL  [/COLOR]'+search2+' - موقع هلال يوتيوب','',99,'','',search)
-	addMenuItem('dir','15. [COLOR FFC89008]SHA  [/COLOR]'+search2+' - موقع شاهد فوريو','',119,'','',search)
-	addMenuItem('dir','16. [COLOR FFC89008]ARL  [/COLOR]'+search2+' - موقع عرب ليونز','',209,'','',search)
+	addMenuItem('dir','13. [COLOR FFC89008]ARL  [/COLOR]'+search2+' - موقع عرب ليونز','',209,'','',search)
+	addMenuItem('dir','14. [COLOR FFC89008]SHA  [/COLOR]'+search2+' - موقع شاهد فوريو','',119,'','',search)
+	addMenuItem('dir','15. [COLOR FFC89008]HEL  [/COLOR]'+search2+' - موقع هلال يوتيوب','',99,'','',search)
 	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
 	#addMenuItem('dir','16. [COLOR FFC89008]HLA  [/COLOR]'+search+' - موقع هلا سيما','',88,'','',search) # 89
 	#addMenuItem('dir','17. [COLOR FFC89008]SFW  [/COLOR]'+search+' - موقع سيريس فور وتش','',218,'','',search) # 219
 	#addMenuItem('dir','18. [COLOR FFC89008]MVZ  [/COLOR]'+search+' - موقع موفيز لاند','',188,'','',search)# 189
 	#addMenuItem('dir','19. [COLOR FFC89008]EGB  [/COLOR]'+search+' - موقع ايجي بيست','',128,'','',search)# 129
 	return
+
+def LAST_VIDEOS_MENU():
+	addMenuItem('dir','مسح هذه القائمة','',266,'','','IsPlayable=no')
+	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
+	if os.path.exists(lastvideosfile):
+		with open(lastvideosfile,'r') as f: videoLIST = f.read()
+		videoLIST = eval(videoLIST)
+		#LOG_THIS('NOTICE',str(videoLIST))
+		for name,url,mode,image,page,text in videoLIST:
+			addMenuItem('link',name,url,mode,image,page,text)
+	return
+
+def DELETE_LAST_VIDEOS_MENU():
+	if os.path.exists(lastvideosfile): os.remove(lastvideosfile)
+	addMenuItem('dir','مسح هذه القائمة','',266,'','','IsPlayable=no')
+	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
+	return
+
+
+
+
+
 

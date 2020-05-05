@@ -11,7 +11,7 @@ proxy = '||MyProxyUrl='+PROXIES[6][1]
 proxy = ''
 
 def MAIN(mode,url,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==70: results = MENU(url)
 	elif mode==71: results = CATEGORIES(url+proxy)
 	elif mode==72: results = TITLES(url+proxy,text)
@@ -37,10 +37,9 @@ def MENU(website=''):
 			if title not in ignoreLIST:
 				addMenuItem('dir',website+'::'+menu_name+title,link,71)
 	return
-	
 
 def CATEGORIES(url):
-	html = openURL_cached(REGULAR_CACHE,url,'',headers,'','AKOAM-CATEGORIES-1st')
+	html = openURL_cached(LONG_CACHE,url,'',headers,'','AKOAM-CATEGORIES-1st')
 	html_blocks = re.findall('sect_parts(.*?)</div>',html,re.DOTALL)
 	if html_blocks:
 		block = html_blocks[0]
@@ -89,16 +88,24 @@ def TITLES(url,type):
 			addMenuItem('dir',menu_name+'صفحة '+title,link,72,'','',type)
 	return
 
+def RESOLVE_UNDERRUN(url):
+	html = openURL_cached(LONG_CACHE,url,'',headers,'','AKOAM-SECTIONS-2nd')
+	url2 = re.findall('"href","(.*?)"',html,re.DOTALL)
+	url2 = url2[1]
+	return url2
+
 def SECTIONS(url):
-	#xbmcgui.Dialog().ok(url,'SECTIONS')
+	#xbmcgui.Dialog().ok(url,'SECTIONS 11')
 	notvideosLIST = ['zip','rar','txt','pdf','htm','tar','iso','html']
 	html = openURL_cached(REGULAR_CACHE,url,'',headers,'','AKOAM-SECTIONS-1st')
-	if 'التصميم الجديد من هنا' in html or 'للموقع الجديد من هنا' in html:
-		url3 = re.findall('sub_extra_desc.*?href="(http.*?akwam.*?)"',html,re.DOTALL)
-		url3 = unquote(url3[0])
-		#xbmcgui.Dialog().ok(str(url3),'SECTIONS')
+	akwam_link1 = re.findall('"(https*://akwam.net/\w+.*?)"',html,re.DOTALL)
+	akwam_link2 = re.findall('"(https*://underurl.com/\w+.*?)"',html,re.DOTALL)
+	if akwam_link1 or akwam_link2:
+		if akwam_link1: url3 = akwam_link1[0]
+		elif akwam_link2: url3 = RESOLVE_UNDERRUN(akwam_link2[0])
+		url3 = unquote(url3)
 		import AKWAM
-		if '/series/' in url3: AKWAM.EPISODES(url3)
+		if '/series/' in url3 or '/shows/' in url3: AKWAM.EPISODES(url3)
 		else: AKWAM.PLAY(url3)
 		return
 	ratingLIST = re.findall('محتوى الفيلم.*?>.*?(\w*?)\W*?<',html,re.DOTALL)

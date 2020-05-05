@@ -6,7 +6,7 @@ menu_name='_KWT_'
 website0a = WEBSITES[script_name][0]
 
 def MAIN(mode,url,page,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==130: results = MENU(url)
 	#elif mode==131: results = TITLES(url)
 	elif mode==132: results = CATEGORIES(url)

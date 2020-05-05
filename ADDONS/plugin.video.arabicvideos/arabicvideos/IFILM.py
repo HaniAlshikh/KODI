@@ -10,7 +10,7 @@ website0d = WEBSITES[script_name][3]
 website1  = 'http://93.190.24.122'
 
 def MAIN(mode,url,page,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==20: results = LANGUAGE_MENU()
 	elif mode==21: results = MENU(url)
 	elif mode==22: results = TITLES(url,page)
@@ -38,16 +38,12 @@ def LIVE_MENU():
 	return
 
 def MENU(website0):
-	if website0=='IFILM':
-		website = 'IFILM'
-		website0 = website0a
+	website = website0
+	if website0=='IFILM_ARABIC': website0 = website0a
+	elif website0=='IFILM_ENGLISH': website0 = website0b
 	else: website = ''
-	html = openURL_cached(LONG_CACHE,website0,'','','','IFILM-MAIN_MENU-1st')
-	html_blocks=re.findall('main-body.*?menu(.*?)nav',html,re.DOTALL)
-	#html_blocks=re.findall('input_Search_" placeholder="(.*?)"',html,re.DOTALL)
-	#name = html_blocks[0]
 	lang = LANG(website0)
-	if lang=='ar':
+	if lang=='ar' or website!='':
 		name0 = 'بحث في الموقع'
 		name1 = 'المسلسلات الحالية'
 		name2 = 'المسلسلات مرتبة حسب الاحدث'
@@ -68,19 +64,25 @@ def MENU(website0):
 	if website=='':
 		addMenuItem('dir',menu_name+name4,website0,27,'','','IsPlayable=False')
 		addMenuItem('dir',menu_name+name0,website0,29)
+	html = openURL_cached(LONG_CACHE,website0+'/home','','','','IFILM-MAIN_MENU-1st')
+	#html = openURL_cached(LONG_CACHE,website0+'/home/index','','','','IFILM-MAIN_MENU-1st')
+	html_blocks=re.findall('button-menu(.*?)nav',html,re.DOTALL)
 	menu = ['Series', 'Program', 'Music']
 	block = html_blocks[0]
 	items = re.findall('href="(.*?)">(.*?)<',block,re.DOTALL)
 	for link,title in items:
 		if any(value in link for value in menu):
-			url = website0 + link
+			#xbmcgui.Dialog().ok(link,str(title))
+			url = website0+link
 			if 'Series' in link:
 				addMenuItem('dir',website+'::'+menu_name+name1,url,22,'','100')
 				addMenuItem('dir',website+'::'+menu_name+name2,url,22,'','101')
 				addMenuItem('dir',website+'::'+menu_name+name3,url,22,'','201')
 			elif 'Music' in link:
+				if website!='': title = 'موسيقى'
 				addMenuItem('dir',website+'::'+menu_name+title,url,25,'','101')
 			elif 'Program':
+				if website!='': title = 'برامج'
 				addMenuItem('dir',website+'::'+menu_name+title,url,22,'','101')
 	return
 

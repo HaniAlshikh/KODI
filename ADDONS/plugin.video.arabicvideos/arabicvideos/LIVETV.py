@@ -5,7 +5,7 @@ script_name='LIVETV'
 website0a = WEBSITES[script_name][0]
 
 def MAIN(mode,url):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==100: results = MENU()
 	elif mode==101: results = ITEMS('0',True)
 	elif mode==102: results = ITEMS('1',True)

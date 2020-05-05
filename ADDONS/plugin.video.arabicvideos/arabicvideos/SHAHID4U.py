@@ -8,7 +8,7 @@ website0a = WEBSITES[script_name][0]
 ignoreLIST = ['مسلسلات انمي','الرئيسية','عروض مصارعة','الكل','افلام']
 
 def MAIN(mode,url,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==110: results = MENU(url)
 	elif mode==111: results = TITLES(url)
 	elif mode==112: results = PLAY(url)
@@ -125,14 +125,17 @@ def PLAY(url):
 	parts = url.split('/')
 	#xbmcgui.Dialog().ok(url,'PLAY-1st')
 	#url = unquote(quote(url))
-	html = openURL_cached(LONG_CACHE,url,'',headers,'','ARABLIONZ-PLAY-1st')
+	response = openURL_requests_cached(LONG_CACHE,'GET',url,'',headers,True,'','SHAHID4U-PLAY-1st')
+	html = response.text.encode('utf8')
 	id = re.findall('postId:"(.*?)"',html,re.DOTALL)
 	if not id: id = re.findall('post_id=(.*?)"',html,re.DOTALL)
 	id = id[0]
 	if '/post/' in url and 'seed' in url: url = website0a+'/watch/'+id
+	#LOG_THIS('NOTICE','EMAD START TIMING 111')
 	if True or '/watch/' in html:
 		url2 = url.replace(parts[3],'watch')
-		html2 = openURL_cached(LONG_CACHE,url2,'',headers,'','ARABLIONZ-PLAY-2nd')
+		response = openURL_requests_cached(LONG_CACHE,'GET',url2,'',headers,True,'','SHAHID4U-PLAY-2nd')
+		html2 = response.text.encode('utf8')
 		items1 = re.findall('data-embedd="(.*?)".*?alt="(.*?)"',html2,re.DOTALL)
 		items2 = re.findall('data-embedd=".*?(http.*?)("|&quot;)',html2,re.DOTALL)
 		items3 = re.findall('src=&quot;(.*?)&quot;.*?>(.*?)<',html2,re.DOTALL|re.IGNORECASE)
@@ -157,7 +160,8 @@ def PLAY(url):
 	if True or '/download/' in html:
 		headers2 = { 'User-Agent':'' , 'X-Requested-With':'XMLHttpRequest' }
 		url2 = website0a + '/ajaxCenter?_action=getdownloadlinks&postId='+id
-		html2 = openURL_cached(LONG_CACHE,url2,'',headers2,'','ARABLIONZ-PLAY-3rd')
+		response = openURL_requests_cached(LONG_CACHE,'GET',url2,'',headers2,True,'','SHAHID4U-PLAY-3rd')
+		html2 = response.text.encode('utf8')
 		if 'download-btns' in html2:
 			items3 = re.findall('href="(.*?)"',html2,re.DOTALL)
 			for url3 in items3:
@@ -166,7 +170,8 @@ def PLAY(url):
 					linkLIST.append(url3)
 				elif '/page/' in url3:
 					resolution4 = ''
-					html4 = openURL_cached(LONG_CACHE,url3,'',headers,'','ARABLIONZ-PLAY-4th')
+					response = openURL_requests_cached(LONG_CACHE,'GET',url3,'',headers,True,'','SHAHID4U-PLAY-4th')
+					html4 = response.text.encode('utf8')
 					blocks = re.findall('(<strong>.*?)-----',html4,re.DOTALL)
 					for block4 in blocks:
 						server4 = ''
@@ -188,8 +193,11 @@ def PLAY(url):
 			#xbmcgui.Dialog().ok('download 1',	str(len(linkLIST))	)
 		elif 'slow-motion' in html2:
 			html3 = html2.replace('<h6 ','==END== ==START==')+'==END=='
+			#with open('s:\\emad.html','w') as f: f.write(html3)
 			all_blocks = re.findall('==START==(.*?)==END==',html3,re.DOTALL)
 			for block4 in all_blocks:
+				if 'href=' not in block4: continue
+				#xbmcgui.Dialog().ok('download 111',	block4	)
 				resolution4 = ''
 				items4 = re.findall('slow-motion">(.*?)<',block4,re.DOTALL)
 				for item4 in items4:
@@ -197,11 +205,11 @@ def PLAY(url):
 					if item:
 						resolution4 = '____'+item[0]
 						break
-				items4 = re.findall('<td>(.*?)</td>.*?href="(.*?)"',block4,re.DOTALL)
+				items4 = re.findall('<td>(.*?)</td>.*?href="(http.*?)"',block4,re.DOTALL)
 				for server4,link4 in items4:
 					link4 = link4+'?name='+server4+'__download'+resolution4
 					linkLIST.append(link4)
-				items4 = re.findall('href="(.*?)".*?name">(.*?)<',block4,re.DOTALL)
+				items4 = re.findall('href="(http.*?)".*?name">(.*?)<',block4,re.DOTALL)
 				for link4,server4 in items4:
 					link4 = link4+'?name='+server4+'__download'+resolution4
 					linkLIST.append(link4)

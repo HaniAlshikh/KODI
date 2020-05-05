@@ -8,7 +8,7 @@ menu_name='_PNT_'
 website0a = WEBSITES[script_name][0]
 
 def MAIN(mode,url,page,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==30: results = MENU(url)
 	elif mode==31: results = CATEGORIES(url,'3')
 	elif mode==32: results = ITEMS(url)
@@ -21,7 +21,7 @@ def MAIN(mode,url,page,text):
 	return results
 
 def MENU(website=''):
-	if website=='': addMenuItem('dir',menu_name+'بحث في الموقع','',39)
+	#if website=='': addMenuItem('dir',menu_name+'بحث في الموقع','',39)
 	addMenuItem('dir',website+'::'+menu_name+'مسلسلات وبرامج',website0a+'/series',31)
 	addMenuItem('dir',website+'::'+menu_name+'المسلسلات الاكثر مشاهدة',website0a+'/series',37)
 	addMenuItem('dir',website+'::'+menu_name+'افلام حسب النوع',website0a+'/movies',35)

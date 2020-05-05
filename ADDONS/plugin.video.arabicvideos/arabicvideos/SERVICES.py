@@ -5,7 +5,7 @@ from LIBRARY import *
 script_name='SERVICES'
 
 def MAIN(mode,text=''):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	#if mode in [0,1]: FIX_SKIN_KEYBOARD(mode,text)
 	if   mode==  2: SEND_MESSAGE(text)
 	elif mode==  3: DMCA()

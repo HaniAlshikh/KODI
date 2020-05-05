@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.arabicvideos" name="Arabic Videos" version="6.5.0" provider-name="EMAD MAHDI">
+<addon id="plugin.video.arabicvideos" name="Arabic Videos" version="6.5.1" provider-name="EMAD MAHDI">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0"/>
 		<import addon="script.module.requests" version="2.0.0" optional="false"/>

@@ -5,7 +5,7 @@ script_name='IPTV'
 menu_name='_IPT_'
 
 def MAIN(mode,url,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==230: results = MAIN_MENU()
 	elif mode==231: results = ADD_ACCOUNT()
 	elif mode==232: results = CREATE_STREAMS()
@@ -13,43 +13,47 @@ def MAIN(mode,url,text):
 	elif mode==234: results = ITEMS(url,text)
 	elif mode==235: results = PLAY(url,'LIVE')
 	elif mode==236: results = PLAY(url,'VOD')
-	elif mode==237: results = DELETE_SQL3_FILES(True)
+	elif mode==237: results = DELETE_ALL_OLD_FILES([],True)
 	elif mode==239: results = SEARCH(text)
 	else: results = False
 	return results
 
 def MAIN_MENU():
-	addMenuItem('dir',menu_name+'اضافة اشتراك IPTV','',231)
-	addMenuItem('dir',menu_name+'جلب ملفات IPTV','',232)
-	addMenuItem('dir',menu_name+'بحث في ملفات IPTV','',239)
-	addMenuItem('dir',menu_name+'مسح ملفات IPTV','',237)
+	addMenuItem('dir','  1.  [COLOR FFC89008]IPT  [/COLOR]'+'بحث في ملفات IPTV','',239)
+	addMenuItem('dir','  2.  [COLOR FFC89008]IPT  [/COLOR]'+'اضافة اشتراك IPTV','',231)
+	addMenuItem('dir','  3.  [COLOR FFC89008]IPT  [/COLOR]'+'جلب ملفات IPTV','',232)
+	addMenuItem('dir','  4.  [COLOR FFC89008]IPT  [/COLOR]'+'مسح ملفات IPTV','',237)
 	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
-	addMenuItem('dir',menu_name+'قنوات مصنفة ومرتبة','LIVE_GROUPED',233)
-	addMenuItem('dir',menu_name+'أفلام مصنفة ومرتبة','VOD_MOVIES',233)
-	addMenuItem('dir',menu_name+'مسلسلات مصنفة ومرتبة','VOD_SERIES',233)
+	addMenuItem('dir','  5.  [COLOR FFC89008]IPT  [/COLOR]'+'قنوات مصنفة ومرتبة','LIVE_GROUPED',233)
+	addMenuItem('dir','  6.  [COLOR FFC89008]IPT  [/COLOR]'+'أفلام مصنفة ومرتبة','VOD_MOVIES',233)
+	addMenuItem('dir','  7.  [COLOR FFC89008]IPT  [/COLOR]'+'مسلسلات مصنفة ومرتبة','VOD_SERIES',233)
+	addMenuItem('dir','  8.  [COLOR FFC89008]IPT  [/COLOR]'+'فيديوهات مجهولة','VOD_UNKNOWN',233)
 	#addMenuItem('dir',menu_name+'قنوات مجهولة','LIVE_UNKNOWN',233)
-	addMenuItem('dir',menu_name+'فيديوهات مجهولة','VOD_UNKNOWN',233)
 	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
-	addMenuItem('dir',menu_name+'قنوات مصنفة من أسمائها','LIVE_FROM_NAME',233)
-	addMenuItem('dir',menu_name+'فيديوهات مصنفة من أسمائها','VOD_FROM_NAME',233)
+	addMenuItem('dir','  9.  [COLOR FFC89008]IPT  [/COLOR]'+'قنوات مصنفة من أسمائها','LIVE_FROM_NAME',233)
+	addMenuItem('dir','10.  [COLOR FFC89008]IPT  [/COLOR]'+'فيديوهات مصنفة من أسمائها','VOD_FROM_NAME',233)
 	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
-	addMenuItem('dir',menu_name+'القنوات الاصلية بدون تغيير','LIVE_ORIGINAL',233)
-	addMenuItem('dir',menu_name+'الفيديوهات الاصلية بدون تغيير','VOD_ORIGINAL',233)
+	addMenuItem('dir','11.  [COLOR FFC89008]IPT  [/COLOR]'+'القنوات الاصلية بدون تغيير','LIVE_ORIGINAL',233)
+	addMenuItem('dir','12.  [COLOR FFC89008]IPT  [/COLOR]'+'الفيديوهات الاصلية بدون تغيير','VOD_ORIGINAL',233)
 	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
 	return
 
 def GROUPS(TYPE,GROUP,website=''):
-	#LOG_THIS('NOTICE','EMAD START GROUP')
+	#LOG_THIS('NOTICE','EMAD START GROUPS')
 	results = READ_FROM_SQL3([TYPE,GROUP,website],'iptv_groups')
+	#LOG_THIS('NOTICE','EMAD 000')
 	if results:
 		for i1,i2,i3,i4,i5,i6,i7 in results:
 			addMenuItem(i1,i2,i3,i4,i5,i6,i7)
+		#LOG_THIS('NOTICE','EMAD 111')
 		return
 	else: results = []
 	if website=='': show = True
 	else: show = False
 	if not isIPTVFiles(show): return
+	#LOG_THIS('NOTICE','EMAD 222')
 	streams = GET_STREAMS_FROM_SQL3(TYPE)
+	#LOG_THIS('NOTICE','EMAD 333')
 	groups,unique,logos = [],[],[]
 	for dict in streams:
 		groups.append(dict['group'])
@@ -57,7 +61,7 @@ def GROUPS(TYPE,GROUP,website=''):
 	z = zip(groups,logos)
 	z = sorted(z, reverse=False, key=lambda key: key[0])
 	name = ''
-	if website!='': name = website+': '
+	if website!='': name = '[COLOR FFC89008]'+website+':[/COLOR]  '
 	for group,img in z:
 		if '____' in group: title2,group2 = group.split('____')
 		else: title2,group2 = '',group
@@ -76,8 +80,8 @@ def GROUPS(TYPE,GROUP,website=''):
 			if TYPE!='VOD_SERIES' or GROUP=='' or title2 in GROUP:
 				addMenuItem('dir',website+'::'+menu_name+name+title,TYPE,234,img,'',group)
 				results.append(('dir',website+'::'+menu_name+name+title,TYPE,234,img,'',group))
-	SAVE_TO_SQL3([TYPE,GROUP,website],'iptv_groups',results)
-	#LOG_THIS('NOTICE','EMAD FINISHED GROUP')
+	WRITE_TO_SQL3([TYPE,GROUP,website],'iptv_groups',results)
+	LOG_THIS('NOTICE','EMAD FINISHED GROUPS')
 	return
 
 def ITEMS(TYPE,GROUP):
@@ -99,7 +103,7 @@ def ITEMS(TYPE,GROUP):
 			else:
 				addMenuItem('link',menu_name+title,url,236,img,'','IsPlayable=yes')
 				results.append(('link',menu_name+title,url,236,img,'','IsPlayable=yes'))
-	SAVE_TO_SQL3([TYPE,GROUP],'iptv_items',results)
+	WRITE_TO_SQL3([TYPE,GROUP],'iptv_items',results)
 	return
 
 def PLAY(url,type):
@@ -124,6 +128,34 @@ def ADD_ACCOUNT():
 	settings.setSetting('iptv.url',iptvURL)
 	xbmcgui.Dialog().ok(iptvURL,'تم تغير رابط اشتراك IPTV الى هذا الرابط الجديد')
 	CREATE_STREAMS()
+	return
+
+def SEARCH(search=''):
+	if '::' in search:
+		if not isIPTVFiles(False): return
+		search = search.split('::')[0]
+		exit = False
+		TYPE = 'VOD_FROM_NAME'
+	else:
+		if not isIPTVFiles(True): return
+		exit = True
+		searchTitle = ['الكل','قنوات','فيديوهات']
+		typeList = ['ALL','LIVE_FROM_NAME','VOD_FROM_NAME']
+		selection = xbmcgui.Dialog().select('أختر البحث المناسب', searchTitle)
+		if selection == -1: return
+		TYPE = typeList[selection]
+	if search=='': search = KEYBOARD()
+	if search == '': return
+	streams = GET_STREAMS_FROM_SQL3(TYPE)
+	searchLower = search.lower()
+	for dict in streams:
+		title = dict['title']
+		if searchLower in title.lower():
+			url = dict['url']
+			img = dict['img']
+			if '.mp4' in url or '.mkv' in url or '.avi' in url or '.mp3' in url:
+				addMenuItem('link',menu_name+title,url,236,img,'','IsPlayable=yes')
+			else: addMenuItem('link',menu_name+title,url,235,img,'','IsPlayable=no')
 	return
 
 def CREATE_STREAMS():
@@ -269,7 +301,7 @@ def CREATE_STREAMS():
 	#LOG_THIS('NOTICE','EMAD 444')
 	streams_sorted = sorted(streams_not_sorted, reverse=False, key=lambda key: key['title'].lower())
 	grouped_streams = {}
-	types = ['ALL','LIVE_ORIGINAL','VOD_ORIGINAL','LIVE_FROM_NAME','VOD_FROM_NAME','LIVE_GROUPED','LIVE_UNKNOWN','VOD_MOVIES','VOD_SERIES','VOD_UNKNOWN']
+	types = ['ALL','LIVE_ORIGINAL','VOD_ORIGINAL','LIVE_FROM_NAME','VOD_FROM_NAME','LIVE_GROUPED','LIVE_UNKNOWN','VOD_MOVIES','VOD_SERIES','VOD_UNKNOWN','DUMMY']
 	for type in types: grouped_streams[type] = []
 	#LOG_THIS('NOTICE','EMAD 444 CREATE STREAMS START creating 1st STREAMS dictionary')
 	for dict in streams_sorted:
@@ -299,6 +331,7 @@ def CREATE_STREAMS():
 		del dict2['lang']
 		if 'LIVE' in type: grouped_streams['LIVE_ORIGINAL'].append(dict2)
 		elif 'VOD' in type: grouped_streams['VOD_ORIGINAL'].append(dict2)
+	grouped_streams['DUMMY'].append('')
 	#LOG_THIS('NOTICE','EMAD 666 CREATE STREAMS FINISHED')
 	"""
 	for dict in streams_sorted:
@@ -312,18 +345,32 @@ def CREATE_STREAMS():
 			dict3['type'] = 'VOD_EPISODES'
 			grouped_streams['VOD_EPISODES'].append(dict3)
 	"""
-	#for dict in grouped_streams['VOD']:
-	#	if 'AWALEM KHAFIYA S01 E03' in dict['title']:
-	#		xbmcgui.Dialog().ok(dict['title'],dict['title'][0:3])
+	DELETE_ALL_OLD_FILES([m3u_filename],False)
+	SAVE_STREAMS_TO_SQL3(grouped_streams,types)
 	#SAVE_STREAMS_TO_DISK(grouped_streams,types)
-	DELETE_SQL3_FILES(False)
-	SAVE_STREAMS_TO_SQL3(grouped_streams,types,m3u_filename)
 	return
+
+def isIPTVFiles(show_msg=True):
+	streams = GET_STREAMS_FROM_SQL3('DUMMY')
+	#xbmcgui.Dialog().ok('DUMMY',str(streams))
+	if streams: return True
+	if show_msg: xbmcgui.Dialog().ok('جهازك لا يحتوي على ملفات IPTV','انت بحاجة الى:','اولا اضافة اشتراكك المدفوع مع أي شركة IPTV','ثم ثانيا جلب ملفات IPTV')
+	return False
+
+def isIPTVFiles_Disk(show_msg=True):
+	settings = xbmcaddon.Addon(id=addon_id)
+	filename = settings.getSetting('iptv.file')
+	list = str(os.listdir(addoncachefolder))
+	if filename in list: return True
+	if show_msg: xbmcgui.Dialog().ok('جهازك لا يحتوي على ملفات IPTV','انت بحاجة الى:','اولا اضافة اشتراكك المدفوع مع أي شركة IPTV','ثم ثانيا جلب ملفات IPTV')
+	return False
 
 def SAVE_STREAMS_TO_DISK(grouped_streams,types):
 	filesLIST = []
 	filesLIST.append('iptv_'+str(int(now))+'_.m3u')
 	filename = 'iptv_'+str(int(now))+'__TYPE__.streams'
+	settings = xbmcaddon.Addon(id=addon_id)
+	settings.setSetting('iptv.file',filename)
 	for TYPE in types:
 		new_streams = str(grouped_streams[TYPE])
 		new_streams = new_streams.replace('},','},\n')
@@ -334,9 +381,12 @@ def SAVE_STREAMS_TO_DISK(grouped_streams,types):
 		file.close()
 		filesLIST.append(new_filename)
 	xbmcgui.Dialog().ok('IPTV','تم جلب ملفات IPTV جديدة')
-	settings = xbmcaddon.Addon(id=addon_id)
-	settings.setSetting('iptv.file',filename)
-	DELETE_OLD_DISK_FILES(filesLIST,False)
+	return
+
+def SAVE_STREAMS_TO_SQL3(grouped_streams,types):
+	for TYPE in types:
+		WRITE_TO_SQL3([TYPE],'iptv_streams',grouped_streams[TYPE])
+	xbmcgui.Dialog().ok('IPTV','تم جلب ملفات IPTV جديدة')
 	return
 
 def GET_STREAMS_FROM_DISK(TYPE):
@@ -350,70 +400,14 @@ def GET_STREAMS_FROM_DISK(TYPE):
 	streams = eval(streams_text)
 	return streams
 
-def DELETE_OLD_DISK_FILES(exceptionLIST=[],show=True):
-	#xbmcgui.Dialog().ok(str(exceptionLIST),'')
-	if show:
-		yes = xbmcgui.Dialog().yesno('مسح ملفات IPTV','هل تريد مسح ملفات IPTV الان ؟','','','كلا','نعم')
-		if not yes: return
-	for filename in os.listdir(addoncachefolder):
-		#xbmcgui.Dialog().ok(filename,'')
-		cond1 = ('_.streams' in filename or '_.m3u' in filename)
-		if 'iptv_' in filename and cond1 and filename not in exceptionLIST:
-			iptvOldFile = os.path.join(addoncachefolder,filename)
-			os.remove(iptvOldFile)
-	if show: xbmcgui.Dialog().ok('IPTV','تم مسح ملفات IPTV')
-	return
-
-def isIPTVFiles(show_msg=True):
-	settings = xbmcaddon.Addon(id=addon_id)
-	filename = settings.getSetting('iptv.file')
-	list = str(os.listdir(addoncachefolder))
-	if filename in list: return True
-	if show_msg: xbmcgui.Dialog().ok('جهازك لا يحتوي على ملفات IPTV','انت بحاجة الى:','اولا اضافة اشتراكك المدفوع مع أي شركة IPTV','ثم ثانيا جلب ملفات IPTV')
-	return False
-
-def SEARCH(search=''):
-	if '::' in search:
-		if not isIPTVFiles(False): return
-		search = search.split('::')[0]
-		exit = False
-		TYPE = 'VOD_FROM_NAME'
-	else:
-		if not isIPTVFiles(True): return
-		exit = True
-		searchTitle = ['الكل','قنوات','فيديوهات']
-		typeList = ['ALL','LIVE_FROM_NAME','VOD_FROM_NAME']
-		selection = xbmcgui.Dialog().select('أختر البحث المناسب', searchTitle)
-		if selection == -1: return
-		TYPE = typeList[selection]
-	if search=='': search = KEYBOARD()
-	if search == '': return
-	streams = GET_STREAMS_FROM_SQL3(TYPE)
-	searchLower = search.lower()
-	for dict in streams:
-		title = dict['title']
-		if searchLower in title.lower():
-			url = dict['url']
-			img = dict['img']
-			if '.mp4' in url or '.mkv' in url or '.avi' in url or '.mp3' in url:
-				addMenuItem('link',menu_name+title,url,236,img,'','IsPlayable=yes')
-			else: addMenuItem('link',menu_name+title,url,235,img,'','IsPlayable=no')
-	return
-
-def SAVE_STREAMS_TO_SQL3(grouped_streams,types,m3u_filename):
-	for TYPE in types:
-		SAVE_TO_SQL3([TYPE],'iptv_streams',grouped_streams[TYPE])
-	settings = xbmcaddon.Addon(id=addon_id)
-	#m3u_filename = 'iptv_'+str(int(now))+'_.m3u'
-	settings.setSetting('iptv.file',m3u_filename)
-	xbmcgui.Dialog().ok('IPTV','تم جلب ملفات IPTV جديدة')
-	return
-
 def GET_STREAMS_FROM_SQL3(TYPE):
-	results = READ_FROM_SQL3([TYPE],'iptv_streams')
-	return results
+	streams = READ_FROM_SQL3([TYPE],'iptv_streams')
+	return streams
 
-def DELETE_SQL3_FILES(show=True):
+def DELETE_ALL_OLD_FILES(exceptionLIST=[],show=True):
+	if show:
+		yes = xbmcgui.Dialog().yesno('مسح ملفات IPTV','تستطيع في أي وقت الدخول إلى قائمة IPTV وجلب ملفات IPTV جديدة .. هل تريد الآن مسح الملفات القديمة المخزنة في البرنامج ؟!','','','كلا','نعم')
+		if not yes: return
 	conn = sqlite3.connect(dbfile)
 	c = conn.cursor()
 	c.execute('DROP TABLE IF EXISTS iptv_streams')
@@ -421,15 +415,16 @@ def DELETE_SQL3_FILES(show=True):
 	c.execute('DROP TABLE IF EXISTS iptv_items')
 	conn.commit()
 	conn.close()
-	settings = xbmcaddon.Addon(id=addon_id)
-	filename = settings.getSetting('iptv.file')
-	iptvOldFile = os.path.join(addoncachefolder,filename)
-	try: os.remove(iptvOldFile)
-	except: pass
-	if show: xbmcgui.Dialog().ok('IPTV','تم مسح ملفات IPTV')
+	for filename in os.listdir(addoncachefolder):
+		cond1 = ('_.streams' in filename or '_.m3u' in filename)
+		if 'iptv_' in filename and cond1 and filename not in exceptionLIST:
+			iptvOldFile = os.path.join(addoncachefolder,filename)
+			os.remove(iptvOldFile)
+	if show: xbmcgui.Dialog().ok('IPTV','تم مسح جميع ملفات IPTV')
 	return
 
-def SAVE_TO_SQL3(inputLIST,tableNAME,dataLIST):
+def WRITE_TO_SQL3(inputLIST,tableNAME,dataLIST):
+	#xbmcgui.Dialog().ok(filename,'')
 	#LOG_THIS('NOTICE','EMAD START SAVE')
 	conn = sqlite3.connect(dbfile)
 	c = conn.cursor()
@@ -446,6 +441,8 @@ def SAVE_TO_SQL3(inputLIST,tableNAME,dataLIST):
 	return
 
 def READ_FROM_SQL3(inputLIST,tableNAME):
+	#LOG_THIS('NOTICE','EMAD START')
+	#LOG_THIS('NOTICE',str(inputLIST))
 	conn = sqlite3.connect(dbfile)
 	c = conn.cursor()
 	conn.text_factory = str
@@ -460,9 +457,11 @@ def READ_FROM_SQL3(inputLIST,tableNAME):
 		#message = 'found in cache'
 		compressed = rows[0][0]
 		text = zlib.decompress(compressed)
-		results = cPickle.loads(text)
-		results = eval(results)
+		results2 = cPickle.loads(text)
+		results = eval(results2)
+		#LOG_THIS('NOTICE','EMAD 444')
 	else:
 		#message = 'not found in cache'
 		results = []
+	#LOG_THIS('NOTICE','EMAD END')
 	return results

@@ -18,7 +18,7 @@ menu_name='_EGV_'
 website0a = WEBSITES[script_name][0]
 
 def MAIN(mode,url,page,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==220: results = MENU(url)
 	elif mode==221: results = FILTERS_MENU(url)
 	elif mode==222: results = TITLES(url,page)

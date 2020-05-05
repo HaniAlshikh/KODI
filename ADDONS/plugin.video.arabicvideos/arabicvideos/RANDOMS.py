@@ -5,7 +5,6 @@ from LIBRARY import *
 script_name='RANDOMS'
 
 def MAIN(mode,url,text=''):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==160: results = MAIN_MENU()
 	elif mode==161: results = RANDOM_LIVETV()
 	elif mode==162: results = RANDOM_CATEGORY(text,162)
@@ -36,8 +35,8 @@ def RANDOM_LIVETV():
 	addMenuItem('dir','[COLOR FFC89008] YUT   [/COLOR]'+'قنوات عربية من يوتيوب','',147)
 	addMenuItem('dir','[COLOR FFC89008] YUT   [/COLOR]'+'قنوات أجنبية من يوتيوب','',148)
 	addMenuItem('dir','[COLOR FFC89008] IFL    [/COLOR]'+'قناة آي فيلم من موقعهم','',28)
-	addMenuItem('link','[COLOR FFC89008] MRF  [/COLOR]'+'قناة المعارف من موقعهم','',41)
-	addMenuItem('link','[COLOR FFC89008] KWT  [/COLOR]'+'قناة الكوثر من موقعهم','',135)
+	addMenuItem('link','[COLOR FFC89008] MRF  [/COLOR]'+'قناة المعارف من موقعهم','',41,'','','IsPlayable=no')
+	addMenuItem('link','[COLOR FFC89008] KWT  [/COLOR]'+'قناة الكوثر من موقعهم','',135,'','','IsPlayable=no')
 	import LIVETV
 	LIVETV.ITEMS('0',False)
 	LIVETV.ITEMS('1',False)
@@ -49,28 +48,37 @@ def RANDOM_LIVETV():
 def SEARCH_RANDOM_VIDEOS(options):
 	headers = { 'User-Agent' : '' }
 	url = 'https://www.bestrandoms.com/random-arabic-words'
-	payload = { 'quantity' : '80' }
+	payload = { 'quantity' : '50' }
 	data = urllib.urlencode(payload)
 	#xbmcgui.Dialog().ok('',str(data))
-	html = openURL_cached(SHORT_CACHE,url,data,headers,'','RANDOMS-SEARCH_RANDOM_VIDEOS-1st')
+	html = openURL_cached(30*MINUTE,url,data,headers,'','RANDOMS-SEARCH_RANDOM_VIDEOS-1st')
 	html_blocks = re.findall('list-unstyled(.*?)clearfix',html,re.DOTALL)
 	block = html_blocks[0]
 	items = re.findall('<span>(.*?)</span>.*?<span>(.*?)</span>',block,re.DOTALL)
-	arbLIST,engLIST = [],[]
-	for arbWORD, engWORD in items:
-		if len(arbWORD)<=4 or len(engWORD)<=2: continue
-		bad = False
-		for i in [' ','"','`',',','.',':',';',"'",'-']:
-			if i in arbWORD or i in engWORD:
-				bad = True
-				break
-		if bad: continue
-		arbLIST.append(arbWORD.lower())
-		engLIST.append(engWORD.lower())
-	list = ['كلمات عشوائية عربية','كلمات عشوائية إنكليزية']
-	list2 = arbLIST+engLIST
-	#selection = xbmcgui.Dialog().select('اختر كلمة للبحث عنها:', list2)
+	arbLIST,engLIST = zip(*items)
+	list2 = []
+	splitters = [' ','"','`',',','.',':',';',"'",'-']
+	bothLIST = engLIST+arbLIST
+	for word in bothLIST:
+		if word in engLIST: minimumChars = 2
+		if word in arbLIST: minimumChars = 4
+		list3 = [i in word for i in splitters]
+		if any(list3):
+			index = list3.index(True)
+			splitter = splitters[index]
+			word3 = ''
+			if word.count(splitter)>1: word1,word2,word3 = word.split(splitter,2)
+			else: word1,word2 = word.split(splitter,1)
+			if len(word1)>minimumChars: list2.append(word1.lower())
+			if len(word2)>minimumChars: list2.append(word2.lower())
+			if len(word3)>minimumChars: list2.append(word3.lower())
+		elif len(word)>minimumChars: list2.append(word.lower())
+	for i in range(0,5): random.shuffle(list2)
+	#LOG_THIS('NOTICE',str(list2))
+	#selection = xbmcgui.Dialog().select(str(len(list2)),list2)
 	"""
+	list = ['كلمات عشوائية عربية','كلمات عشوائية إنكليزية']
+	#selection = xbmcgui.Dialog().select('اختر كلمة للبحث عنها:', list2)
 	list1 = []
 	counts = len(list2)
 	for i in range(counts*5): random.shuffle(list2)
@@ -86,68 +94,70 @@ def SEARCH_RANDOM_VIDEOS(options):
 	search = list2[selection]
 	"""
 	if 'WEBSITES' in options:
-		search_modes = [19,29,39,49,59,69,79,99,119,139,149,209,229,249,259]
-		#search_modes = [39]
+		search_modes = [19,29,49,59,69,79,99,119,139,149,209,229,249,259]
+		#search_modes = [39]	panet search does not work at panet website
 	else:
 		search_modes = [239]
 		import IPTV
 		if not IPTV.isIPTVFiles(True): return
 	count,repeats = 0,0
-	addMenuItem('dir','كلمة البحث : [  ]','',164,'','',options)
-	addMenuItem('dir','إعادة البحث عن فيديوهات عشوائية','',164,'','',options)
+	addMenuItem('dir','البحث عن : [  ]','',164,'','',options)
+	addMenuItem('dir','إعادة البحث العشوائي','',164,'','',options)
 	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
-	while count==0 and repeats<20:
+	for i in range(0,20):
 		text = random.sample(list2,1)[0]
 		text = text+'::'
 		mode = random.sample(search_modes,1)[0]
 		LOG_THIS('NOTICE',LOGGING(script_name)+'   Random Video Search   mode:'+str(mode)+'  text:'+text)
 		results = MAIN_DISPATCHER(mode,'',text,'')
-		#xbmcgui.Dialog().ok(str(repeats),str(results))
-		count = len(menuItemsLIST)-2
-		repeats = repeats+1
-	if repeats<=20: menuItemsLIST[0][1] = 'كلمة البحث الحالية : [ '+text[:-2]+' ]'
+		if len(menuItemsLIST)>3: break
+	menuItemsLIST[0][1] = '[ [COLOR FFC89008]'+text[:-2]+'[/COLOR] البحث عن : [ '
 	#GLOBAL_SEARCH_MENU(search,False)
 	#xbmcgui.Dialog().ok(str(len(menuItemsLIST)),'MENUS')
 	return
 
 def IMPORT_WEBSITES():
+	message = 'للأسف لديك مشكلة في هذا الموقع . ورسالة الخطأ كان فيها تفاصيل المشكلة . جرب إرسال هذه المشكلة إلى المبرمج من قائمة خدمات البرنامج'
 	#LOG_THIS('NOTICE','START TIMING')
 	try: import AKOAM		;	AKOAM.MENU('AKOAM')
-	except: pass
+	except: xbmcgui.Dialog().ok('موقع أكوام القديم',)
 	try: import AKWAM		;	AKWAM.MENU('AKWAM')
-	except: pass
-	try: import PANET		;	PANET.MENU('PANET')
-	except: pass
-	try: import HELAL		;	HELAL.MENU('HELAL')
-	except: pass
-	try: import IFILM		;	IFILM.MENU('IFILM')
-	except: pass
+	except: xbmcgui.Dialog().ok('موقع أكوام الجديد',message)
 	try: import ALARAB		;	ALARAB.MENU('ALARAB')
-	except: pass
-	try: import ALMAAREF	;	ALMAAREF.MENU('ALMAAREF')
-	except: pass
+	except: xbmcgui.Dialog().ok('موقع كل العرب',message)
 	try: import ALFATIMI	;	ALFATIMI.MENU('ALFATIMI')
-	except: pass
-	try: import SHOOFMAX	;	SHOOFMAX.MENU('SHOOFMAX')
-	except: pass
-	try: import SHAHID4U	;	SHAHID4U.MENU('SHAHID4U')
-	except: pass
-	try: import ARABSEED	;	ARABSEED.MENU('ARABSEED')
-	except: pass
-	try: import EGYBESTVIP	;	EGYBESTVIP.MENU('EGYBESTVIP')
-	except: pass
-	try: import ARABLIONZ	;	ARABLIONZ.MENU('ARABLIONZ')
-	except: pass
+	except: xbmcgui.Dialog().ok('موقع المنبر الفاطمي',message)
 	try: import ALKAWTHAR	;	ALKAWTHAR.MENU('ALKAWTHAR')
-	except: pass
-	#import EGYBEST		;	EGYBEST.MENU('EGYBEST')
-	#import HALACIMA	;	HALACIMA.MENU('HALACIMA')
-	#import MOVIZLAND	;	MOVIZLAND.MENU('MOVIZLAND')
-	#import SERIES4WATCH;	SERIES4WATCH.MENU('SERIES4WATCH')
+	except: xbmcgui.Dialog().ok('موقع قناة الكوثر',message)
+	try: import ALMAAREF	;	ALMAAREF.MENU('ALMAAREF')
+	except: xbmcgui.Dialog().ok('موقع قناة المعارف',message)
+	try: import ARABLIONZ	;	ARABLIONZ.MENU('ARABLIONZ')
+	except: xbmcgui.Dialog().ok('موقع عرب ليونز',message)
+	try: import ARABSEED	;	ARABSEED.MENU('ARABSEED')
+	except: xbmcgui.Dialog().ok('موقع عرب سييد',message)
+	try: import EGYBESTVIP	;	EGYBESTVIP.MENU('EGYBESTVIP')
+	except: xbmcgui.Dialog().ok('موقع ايجي بيست vip',message)
+	try: import HELAL		;	HELAL.MENU('HELAL')
+	except: xbmcgui.Dialog().ok('موقع هلال يوتيوب',message)
+	try: import IFILM		;	IFILM.MENU('IFILM_ARABIC')
+	except: xbmcgui.Dialog().ok('موقع قناة اي فيلم العربي',message)
+	try: import IFILM		;	IFILM.MENU('IFILM_ENGLISH')
+	except: xbmcgui.Dialog().ok('موقع قناة اي فيلم انكليزي',message)
+	try: import PANET		;	PANET.MENU('PANET')
+	except: xbmcgui.Dialog().ok('موقع بانيت',message)
+	try: import SHAHID4U	;	SHAHID4U.MENU('SHAHID4U')
+	except: xbmcgui.Dialog().ok('موقع شاهد فوريو',message)
+	try: import SHOOFMAX	;	SHOOFMAX.MENU('SHOOFMAX')
+	except: xbmcgui.Dialog().ok('موقع شوف ماكس',message)
+	#import EGYBEST			;	EGYBEST.MENU('EGYBEST')
+	#import HALACIMA		;	HALACIMA.MENU('HALACIMA')
+	#import MOVIZLAND		;	MOVIZLAND.MENU('MOVIZLAND')
+	#import SERIES4WATCH	;	SERIES4WATCH.MENU('SERIES4WATCH')
 	#LOG_THIS('NOTICE','END TIMING')
 	return
 
 def IMPORT_IPTV():
+	#LOG_THIS('NOTICE','EMAD 111')
 	import IPTV
 	if not IPTV.isIPTVFiles(True): return
 	try: IPTV.GROUPS('VOD_MOVIES','','MOVIES')
@@ -159,6 +169,7 @@ def IMPORT_IPTV():
 	return
 
 def CATEGORIES_MENU(options):
+	#LOG_THIS('NOTICE','EMAD 111')
 	if 'WEBSITES' in options: IMPORT_WEBSITES()
 	else: IMPORT_IPTV()
 	for nameonly in sorted(contentsDICT.keys()):
@@ -169,30 +180,15 @@ def CATEGORIES_SUBMENU(nameonly,options):
 	if 'WEBSITES' in options: IMPORT_WEBSITES()
 	elif 'IPTV' in options: IMPORT_IPTV()
 	if 'RANDOM' in options:
-		addMenuItem('dir','القسم الحالي : [ '+nameonly+' ]',nameonly,166,'','',options)
-		addMenuItem('dir','إعادة طلب فيديوهات عشوائية',nameonly,166,'','',options)
+		addMenuItem('dir','[ [COLOR FFC89008]'+nameonly+'[/COLOR] القسم : [ ',nameonly,166,'','',options)
+		addMenuItem('dir','إعادة الطلب العشوائي من نفس القسم',nameonly,166,'','',options)
 		addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
-	for website in contentsDICT[nameonly].keys():
-		name,url,mode,iconimage,page,text = contentsDICT[nameonly][website]
-		if   website=='AKOAM'		: name = 'موقع أكوام القديم'
-		elif website=='AKWAM'		: name = 'موقع أكوام الجديد'
-		elif website=='PANET'		: name = 'موقع بانيت'
-		elif website=='IFILM'		: name = 'موقع قناة اي فيلم'
-		elif website=='HELAL'		: name = 'موقع هلال يوتيوب'
-		elif website=='ALARAB'		: name = 'موقع كل العرب'
-		elif website=='ALFATIMI'	: name = 'موقع المنبر الفاطمي'
-		elif website=='ALMAAREF'	: name = 'موقع قناة المعارف'
-		elif website=='SHOOFMAX'	: name = 'موقع شوف ماكس'
-		elif website=='SHAHID4U'	: name = 'موقع شاهد فوريو'
-		elif website=='ARABSEED'	: name = 'موقع عرب سييد'
-		elif website=='ALKAWTHAR'	: name = 'موقع قناة الكوثر'
-		elif website=='ARABLIONZ'	: name = 'موقع عرب ليونز'
-		elif website=='EGYBESTVIP'	: name = 'موقع ايجي بيست vip'
-		elif website=='IPTV'		: name = 'IPTV'
-		if 'RANDOM' in options: MAIN_DISPATCHER(mode,url,text,page)
+	for website in sorted(contentsDICT[nameonly].keys()):
+		type,name,url,mode2,image,page,text = contentsDICT[nameonly][website]
+		if 'RANDOM' in options: MAIN_DISPATCHER(mode2,url,text,page)
 		else:
-			if len(contentsDICT[nameonly])==1: MAIN_DISPATCHER(mode,url,text,page)
-			else: addMenuItem('dir',name,url,mode,iconimage,page,text)
+			if len(contentsDICT[nameonly])==1: MAIN_DISPATCHER(mode2,url,text,page)
+			else: addMenuItem('dir',website,url,mode2,image,page,text)
 	#LOG_THIS('NOTICE',str(contentsDICT[nameonly]))
 	#xbmcgui.Dialog().ok(str(contentsDICT[nameonly].keys()),str(contentsDICT[nameonly]))
 	return
@@ -200,19 +196,34 @@ def CATEGORIES_SUBMENU(nameonly,options):
 def RANDOM_CATEGORY(options,mode):
 	if 'WEBSITES' in options: IMPORT_WEBSITES()
 	elif 'IPTV' in options: IMPORT_IPTV()
-	for name in contentsDICT.keys():
-		if 'مصنف' in name or 'مفلتر' in name: del contentsDICT[name]
 	list1 = contentsDICT.keys()
-	if len(list1)>0:
-		nameonly = random.sample(list1,1)[0]
-		list2 = contentsDICT[nameonly].keys()
-		if len(list2)>0:
-			addMenuItem('dir','القسم الحالي : [ '+nameonly+' ]','',mode,'','',options)
-			addMenuItem('dir','إعادة طلب قسم جديد','',mode,'','',options)
-			addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
-			website = random.sample(list2,1)[0]
-			name,url,mode2,iconimage,page,text = contentsDICT[nameonly][website]
-			results = MAIN_DISPATCHER(mode2,url,text,page)
+	nameonly = random.sample(list1,1)[0]
+	list2 = contentsDICT[nameonly].keys()
+	website = random.sample(list2,1)[0]
+	type,name,url,mode2,image,page,text = contentsDICT[nameonly][website]
+	if '_' in name: name = name.split('_')[2]
+	if name=='': name = '....'
+	LOG_THIS('NOTICE',LOGGING(script_name)+'   Random Category   website: '+website+'   name: '+name+'   url: '+url+'   mode: '+str(mode2))
+	addMenuItem('dir','[ [COLOR FFC89008]'+name+'[/COLOR] القسم : [ ','',mode,'','',options)
+	addMenuItem('dir','إعادة طلب قسم عشوائي','',mode,'','',options)
+	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
+	MAIN_DISPATCHER(mode2,url,text,page)
+	for i in range(0,10):
+		#xbmcgui.Dialog().ok('',str(len(menuItemsLIST)))
+		if str(menuItemsLIST[3:]).count('link')>0: break
+		menuItemsLIST2 = []
+		for type,name,url,mode2,image,page,text in menuItemsLIST[3:]:
+			if 'صفحة' in name: continue
+			menuItemsLIST2.append([type,name,url,mode2,image,page,text])
+		if len(menuItemsLIST2)>0:
+			menuItem = random.sample(menuItemsLIST2,1)[0]
+			type,name,url,mode2,image,page,text = menuItem
+			del menuItemsLIST[3:]
+			if '_' in name: name = name.split('_')[2]
+			if name=='': name = '....'
+			menuItemsLIST[0][1] = '[ [COLOR FFC89008]'+name+'[/COLOR] القسم : [ '
+			LOG_THIS('NOTICE',LOGGING(script_name)+'   Random Category   name: '+name+'   url: '+url+'   mode: '+str(mode2))
+			MAIN_DISPATCHER(mode2,url,text,page)
 	return
 
 

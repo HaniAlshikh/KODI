@@ -1,4 +1,21 @@
 ﻿
+v6.5.1	2020-05-05
+Changed filters exit in ARABSEED, ARABLIONZ & SHAHID4U
+Fixed ARABLIONZ url quote problem
+Updated all categories section
+Updated AKOAM forwarding to AKWAM
+Fixed IFILM Arabic problem in some countries
+Added IFILM English to sections list
+Fixed IPTV messages
+Modified some menus
+Enhanced random video section
+Fixed AKWAM search, titles & play
+Fixed play in ARABSEED, ARABLIONZ & SHAHID4U
+Fixed YOUTUBE duration
+Added last videos menu
+Minor fixes & improvements
+
+
 v6.5.0	2020-04-29
 Offered addons "Check for updates"
 Offered install/enable/update of "EMAD Repository"

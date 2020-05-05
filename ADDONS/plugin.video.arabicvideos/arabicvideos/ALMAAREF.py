@@ -8,7 +8,7 @@ website0a = WEBSITES[script_name][0]
 website0b = WEBSITES[script_name][1]
 
 def MAIN(mode,url,text):
-	LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
+	#LOG_MENU_LABEL(script_name,menu_label,mode,menu_path)
 	if   mode==40: results = MENU(url)
 	elif mode==41: results = LIVE()
 	elif mode==42: results = EPISODES(url)
