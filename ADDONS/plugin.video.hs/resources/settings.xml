@@ -12,4 +12,16 @@
 		<setting type="lsep" label="" />
 		<setting type="sep" />
 	</category>
+
+	<category label="Real Debrid">
+		<setting type="lsep" label="" />
+		<setting type="sep" />
+		<setting type="lsep" label="يرجى ادخال كود الـAPIToken" />
+		<setting type="sep" />
+		<setting type="lsep" label="" />
+		<setting id="rd.token" type="text" label="APIToken :" default="" option="hidden" />
+		<setting type="lsep" label="" />
+		<setting type="sep" />
+	</category>
+
 </settings>

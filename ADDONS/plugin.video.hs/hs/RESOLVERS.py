@@ -6,7 +6,44 @@ script_name='RESOLVERS'
 #doNOTresolveMElist = [ 'mystream','vimple','vidbom','gounlimited' ]
 doNOTresolveMElist = []
 
+
+def getRD():
+	settings = xbmcaddon.Addon(id=addon_id)
+	return settings.getSetting('rd.token')
+
 def PLAY(linkLIST,script_name,text=''):
+	import requests
+	rdList = []
+	apitoken = getRD()
+	headers = {'Authorization': 'Bearer ' + apitoken}
+
+	LOG_THIS('ERROR',LOGGING(script_name)+ '   ' + str(len(linkLIST)) + '   to be unrestrict   ')
+
+	for link in reversed(linkLIST):
+		
+		if 'nitroflare' in link:
+			continue
+
+		x,y,link = INTERNAL_RESOLVERS(link)
+		
+		data = {'link': str(link[0]).strip(), 'password':''}
+		r = requests.post('https://api.real-debrid.com/rest/1.0/unrestrict/link', data = data, headers = headers)
+		linkdata = r.json()
+
+		LOG_THIS('ERROR',LOGGING(script_name)+'   trying to unrestrict   ' + str(link[0]) + '   ' + str(linkdata))
+
+		if 'download' in linkdata:
+			rdList.append(linkdata['download'])
+			# xbmc.Player().play(item=linkdata['download'])
+			PLAY_VIDEO(linkdata['download'],website=script_name,showWatched='yes')
+			break
+			
+	
+	if len(rdList) == 0 or not xbmc.Player().isPlaying():
+		xbmcgui.Dialog().ok("Sources",'لايوجد روابط تحميل سريعة')
+		PLAY_SEC(linkLIST,script_name,text='')
+
+def PLAY_SEC(linkLIST,script_name,text=''):
 	linkLIST = list(set(linkLIST))
 	count_watch = str(linkLIST).count('__watch')
 	count_download = str(linkLIST).count('__download')
