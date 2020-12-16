@@ -305,7 +305,7 @@ def EXIT_IF_SOURCE(source,code,reason):
 	condition1 = (source not in NO_EXIT_LIST and 'RESOLVERS' not in source)
 	condition2 = ('Blocked by Cloudflare' in reason)
 	if condition1 or condition2:
-		SHOW_ERRORS(code,reason)
+		# SHOW_ERRORS(code,reason)
 		if condition1: EXIT_PROGRAM(source)
 	return
 
@@ -386,10 +386,11 @@ def addKodiMenuItem(type,name,url,mode,image='',text1='',text2=''):
 			duration = int(days)*24*HOUR+int(hours)*HOUR+int(minutes)*60+int(seconds)
 			listitem.setInfo('video',{'duration':duration})
 		if 'IsPlayable=no' not in text2: listitem.setProperty('IsPlayable','true')
-		xbmcplugin.setContent(addon_handle,'videos')
+		# xbmcplugin.setContent(addon_handle,'movies')
 		isFolder = False
 	else:
 		listitem.setInfo(type="video",infoLabels={"Title":name})
+		# xbmcplugin.setContent(addon_handle,'tvshows')
 		isFolder = True
 	xbmcplugin.addDirectoryItem(handle=addon_handle,url=u,listitem=listitem,isFolder=isFolder)
 	return
@@ -1038,9 +1039,9 @@ def PLAY_VIDEO(url3,website='',showWatched='yes'):
 		#xbmcgui.Dialog().ok('http server is down','')
 	if result=='playing':
 		#addon_version = xbmc.getInfoLabel( "System.AddonVersion("+addon_id+")" )
-		randomNumber = str(random.randrange(111111111111,999999999999))
-		url2 = 'http://www.google-analytics.com/collect?v=1&tid=UA-127045104-5&cid='+dummyClientID(32)+'&t=event&sc=end&ec='+addon_version+'&av='+addon_version+'&an=ARABIC_VIDEOS&ea='+website+'&z='+randomNumber
-		html = openURL(url2,'','','no','LIBRARY-PLAY_VIDEO-1st')
+		# randomNumber = str(random.randrange(111111111111,999999999999))
+		# url2 = 'http://www.google-analytics.com/collect?v=1&tid=UA-127045104-5&cid='+dummyClientID(32)+'&t=event&sc=end&ec='+addon_version+'&av='+addon_version+'&an=ARABIC_VIDEOS&ea='+website+'&z='+randomNumber
+		# html = openURL(url2,'','','no','LIBRARY-PLAY_VIDEO-1st')
 	EXIT_PROGRAM('LIBRARY-PLAY_VIDEO-3rd')
 	#if 'https://' in url and result in ['failed','timeout']:
 	#	working = HTTPS(False)
@@ -1226,12 +1227,13 @@ def DNS_RESOLVER(url,dnsserver=''):
 	return answer
 
 def RATING_CHECK(script_name,url,ratingLIST):
-	blockedLIST = ['R','MA','16','17','18','كبار']
-	if ratingLIST and any(value in ratingLIST[0] for value in blockedLIST):
-		LOG_THIS('ERROR',LOGGING(script_name)+'   Blocked adults video   URL: [ '+url+' ]')
-		xbmcgui.Dialog().notification('رسالة من المبرمج','الفيديو للكبار فقط وأنا منعته')
-		return True
-	else: return False
+	# blockedLIST = ['R','MA','16','17','18','كبار']
+	# if ratingLIST and any(value in ratingLIST[0] for value in blockedLIST):
+	# 	LOG_THIS('ERROR',LOGGING(script_name)+'   Blocked adults video   URL: [ '+url+' ]')
+	# 	xbmcgui.Dialog().notification('رسالة من المبرمج','الفيديو للكبار فقط وأنا منعته')
+	# 	return True
+	# else: return False
+	return False
 
 def ENABLE_MPD(showDialogs=True):
 	#result = xbmc.executeJSONRPC('{ "jsonrpc":"2.0", "method":"Addons.SetAddonEnabled", "id":1, "params": { "addonid":"inputstream.adaptive", "enabled":false }}')

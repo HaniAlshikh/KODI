@@ -5,8 +5,7 @@ from LIBRARY import *
 script_name = 'MAIN'
 
 
-#xbmcgui.Dialog().ok('test 111',str(addon_handle))
-
+# xbmcgui.Dialog().ok('test 111',str(addon_handle))
 
 args = { 'mode':'260' , 'url':'' , 'text':'' , 'page':'' }
 line = addon_path
@@ -20,7 +19,7 @@ mode = args['mode']
 url = urllib2.unquote(args['url'])
 text = urllib2.unquote(args['text'])
 page = urllib2.unquote(args['page'])
-#xbmcgui.Dialog().ok('args',str(args))
+# xbmcgui.Dialog().ok('args',str(args))
 
 
 LOG_THIS('NOTICE','============================================================================================')
@@ -111,7 +110,6 @@ if mode in ['161','163','164'] or (mode=='166' and 'RANDOM' in text):
 	else: size = size-header_count
 	if size>0: menuItemsLIST = menuItemsLIST2[0:header_count]+random.sample(menuItemsLIST2[header_count:],size)
 
-
 for type,name,url,mode2,image,text1,text2 in menuItemsLIST:
 	addKodiMenuItem(type,name,url,mode2,image,text1,text2)
 
@@ -125,8 +123,28 @@ if int(mode) in menu_update: xbmcplugin.endOfDirectory(addon_handle,True,True,Tr
 elif int(mode) in allowed_empty_modes or len(menuItemsLIST)>0: xbmcplugin.endOfDirectory(addon_handle,True,False,True)
 else: xbmcplugin.endOfDirectory(addon_handle,False,False,True)
 
+# if int(mode) in website_mainmenu_modes:
+# 	xbmcplugin.setContent(addon_handle,'movies')
+	# xbmcgui.Dialog().ok('in',str(addon_handle))
+	# xbmcgui.Dialog().ok('args',str(args))
 
+# xbmcgui.Dialog().ok('test 111',str(mode))
 
+# if int(mode) == 111:
+# 	xbmcplugin.setContent(addon_handle,'tvshows')
+
+if int(mode) == 112:
+	xbmcplugin.setContent(addon_handle,'tvshows')
+
+if int(mode) == 113:
+	xbmcplugin.setContent(addon_handle,'episodes')
+
+if 'افلام' in menu_label:
+	# xbmcgui.Dialog().ok('in',str(addon_handle))
+	xbmcplugin.setContent(addon_handle,'movies')
+
+# if 'مسلسلات' or 'مسلسل' in menu_label:
+# 	xbmcplugin.setContent(addon_handle,'tvshows')
 
 
 """

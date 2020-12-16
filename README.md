@@ -1,1 +1,1 @@
-﻿a fork of [Emad Mahdi's](https://github.com/emadmahdi) awusome addon Arabic Videos suit my personal needs
+﻿a fork of [Emad Mahdi's](https://github.com/emadmahdi) awesome addon Arabic Videos to suit my personal needs
