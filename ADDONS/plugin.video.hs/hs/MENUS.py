@@ -161,9 +161,3 @@ def DELETE_LAST_VIDEOS_MENU():
 	addMenuItem('dir','مسح هذه القائمة','',266,'','','IsPlayable=no')
 	addMenuItem('link','[COLOR FFC89008]=========================[/COLOR]','',9999,'','','IsPlayable=no')
 	return
-
-
-
-
-
-

@@ -1039,9 +1039,9 @@ def PLAY_VIDEO(url3,website='',showWatched='yes'):
 		#xbmcgui.Dialog().ok('http server is down','')
 	if result=='playing':
 		#addon_version = xbmc.getInfoLabel( "System.AddonVersion("+addon_id+")" )
-		# randomNumber = str(random.randrange(111111111111,999999999999))
-		# url2 = 'http://www.google-analytics.com/collect?v=1&tid=UA-127045104-5&cid='+dummyClientID(32)+'&t=event&sc=end&ec='+addon_version+'&av='+addon_version+'&an=ARABIC_VIDEOS&ea='+website+'&z='+randomNumber
-		# html = openURL(url2,'','','no','LIBRARY-PLAY_VIDEO-1st')
+		randomNumber = str(random.randrange(111111111111,999999999999))
+		url2 = 'http://www.google-analytics.com/collect?v=1&tid=UA-127045104-5&cid='+dummyClientID(32)+'&t=event&sc=end&ec='+addon_version+'&av='+addon_version+'&an=ARABIC_VIDEOS&ea='+website+'&z='+randomNumber
+		html = openURL(url2,'','','no','LIBRARY-PLAY_VIDEO-1st')
 	EXIT_PROGRAM('LIBRARY-PLAY_VIDEO-3rd')
 	#if 'https://' in url and result in ['failed','timeout']:
 	#	working = HTTPS(False)
@@ -1435,8 +1435,3 @@ class MyHTTPSHandler(urllib2.HTTPSHandler):
 #import RESOLVERS ; RESOLVERS.URLRESOLVER(url)
 #PLAY_VIDEO(url)
 #traceback.print_exc(file=sys.stderr)
-
-
-
-
-

@@ -337,4 +337,3 @@ def RECONSTRUCT_FILTER(filters,mode):
 	new_filters = new_filters.replace('=0','=')
 	#xbmcgui.Dialog().ok(filters,'RECONSTRUCT_FILTER 22')
 	return new_filters
-

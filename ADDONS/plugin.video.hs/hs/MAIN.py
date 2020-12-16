@@ -193,6 +193,3 @@ if mode3 not in [0,15,17,19] and mode2 not in NOT_FOLDER_MODES:
 
 #if addon_handle > -1:
 #xbmc.Player().play()
-
-
-
